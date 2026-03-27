@@ -1751,6 +1751,38 @@ function saveAdminBlocks(){
 
   alert('✓ Bloqueios guardados com sucesso para ' + adminCalProf + (adminCalDate ? ' em ' + adminCalDate : '') + '!');
 }
+}
+ 
+function unlockAdminMinBlocks(){
+  if(!adminCalDate)return;
+
+  const selecionados = document.querySelectorAll('#adminBlockSlots .block-slot-btn.selected');
+  if(!selecionados.length){
+    alert('Selecione pelo menos um horário para desbloquear.');
+    return;
+  }
+
+  if(!confirm('Tem a certeza que quer desbloquear os horários selecionados?')){
+    return;
+  }
+
+  let blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
+
+  selecionados.forEach(slot => {
+    const t = slot.dataset.time;
+    blocked = blocked.filter(x => x !== t);
+  });
+
+  localStorage.setItem(
+    getAdminBlockKey(adminCalProf, adminCalDate),
+    JSON.stringify(blocked)
+  );
+
+  renderAdminBlockSlots(adminCalDate);
+  renderAdminCal();
+
+  alert('✓ Bloqueios removidos com sucesso.');
+}
 
 renderCalendar();
 if(document.getElementById("adminCalWrap")){}// admin cal init on panel open
