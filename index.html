@@ -1249,9 +1249,9 @@ function selectSlot(t){
 // ===== BASE DE DADOS — Google Sheets =====
 // Cola aqui o URL do teu Google Apps Script Web App:
 // ⬇️ PASSO 3: Cola aqui o URL do Google Apps Script (ver instruções no ficheiro .gs)
-const SHEETS_URL = "https://script.google.com/macros/s/AKfycbzEU_mRoSjV5DZdHs3m52SRGa6lXflDGGklePcqKcTVx_BzIogGy5rUc3-B6CXGP1_Z/exec";
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbx9k2OBIx0j8qAmFW6xqGF3nG9yPS3BNPIdABE_HvcEszQaBmsCH6R--F1nyE7h1VF1/exec";
 
-let bookings = [];
+let bookings = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
 
 async function saveBookingToSheet(bookingObj) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
@@ -1847,6 +1847,25 @@ let _adminSeq=[];
 // Gesto secreto no telemóvel: tocar 5x no logótipo
 let _touchSeq=[];
 document.addEventListener('DOMContentLoaded',function(){
+   loadBookingsFromSheet().then(sheetData => {
+    const localData = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
+
+    const mergedMap = new Map();
+
+    [...localData, ...sheetData].forEach(b => {
+      const key = b.id ? String(b.id) : [b.date, b.time, b.name, b.phone, b.service, b.professional].join('|');
+      mergedMap.set(key, b);
+    });
+
+    bookings = Array.from(mergedMap.values());
+    localStorage.setItem('mbeauty_bookings', JSON.stringify(bookings));
+
+    renderCalendar();
+    if(selectedDate){
+      renderSlots(selectedDate);
+    }
+  });
+ 
   var brand=document.getElementById('navBrand');
   if(brand){
     brand.addEventListener('click',function(){
