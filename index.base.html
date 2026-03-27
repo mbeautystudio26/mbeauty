@@ -295,43 +295,32 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
 .pl-grid.swipe-gallery {
   display: flex !important;
   flex-wrap: nowrap !important;
+  gap: 24px !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
-  gap: 24px;
-}
-
-
-
-/* SWIPE GALLERY */
-.swipe-gallery {
-  display: flex;
-  gap: 24px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  padding: 8px 5% 24px !important;
   scroll-snap-type: x mandatory;
-  padding: 8px 0 24px;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 }
 
-.swipe-gallery .pl-card {
+.pl-grid.swipe-gallery .pl-card {
   flex: 0 0 320px !important;
   min-width: 320px !important;
   scroll-snap-align: start;
 }
 
-.swipe-gallery::-webkit-scrollbar {
+.pl-grid.swipe-gallery::-webkit-scrollbar {
   height: 8px;
 }
 
-.swipe-gallery::-webkit-scrollbar-thumb {
+.pl-grid.swipe-gallery::-webkit-scrollbar-thumb {
   background: rgba(192, 130, 160, 0.35);
   border-radius: 999px;
 }
 
-
-
 @media (max-width: 768px) {
-  .swipe-gallery .pl-card {
+  .pl-grid.swipe-gallery .pl-card {
     flex: 0 0 85% !important;
     min-width: 85% !important;
   }
