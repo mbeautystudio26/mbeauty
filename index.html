@@ -962,6 +962,7 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
           <button class="admin-save-blocks" onclick="saveAdminBlocks()">💾 Guardar Bloqueios</button>
           <button class="admin-save-blocks" onclick="unlockAdminMinBlocks()">🔓 Desbloquear Bloqueios</button>
         
+
         </div>
       </div>
     </div>
@@ -1754,7 +1755,7 @@ function saveAdminBlocks(){
 }
  
 function unlockAdminMinBlocks(){
-  if(!adminCalDate)return;
+  if(!adminCalDate) return;
 
   const selecionados = document.querySelectorAll('#adminBlockSlots .block-slot-btn.selected');
   if(!selecionados.length){
@@ -1766,11 +1767,11 @@ function unlockAdminMinBlocks(){
     return;
   }
 
-  let blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
-
-  selecionados.forEach(slot => {
-    const t = slot.dataset.time;
-    blocked = blocked.filter(x => x !== t);
+  const blocked = getAdminBlocksForDate(adminCalProf, adminCalDate).filter(t => {
+    for (const slot of selecionados) {
+      if (slot.dataset.time === t) return false;
+    }
+    return true;
   });
 
   localStorage.setItem(
