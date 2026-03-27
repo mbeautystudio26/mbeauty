@@ -365,6 +365,9 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
 .footer-legal-btn.reclamacoes:hover{background:rgba(192,82,122,.35);box-shadow:0 4px 14px rgba(192,82,122,.3)}
 .footer-legal-btn.gmaps{background:rgba(66,133,244,.18);color:rgba(180,210,255,.9);border:1px solid rgba(66,133,244,.4)}
 .footer-legal-btn.gmaps:hover{background:rgba(66,133,244,.35);box-shadow:0 4px 14px rgba(66,133,244,.3)}
+  .block-slot-btn.selected{
+  border: 2px solid #d4af37;
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
@@ -1713,7 +1716,7 @@ function renderAdminBlockSlots(ds){
     const isBooked=bookedSlots.has(t);
     const cls='block-slot-btn'+(isBlocked?' blocked':'')+(isBooked?' unavailable':'');
     const tooltip=isBooked?' title="Horário com marcação"':'';
-    return`<div class="${cls}"${isBooked?'':` onclick="toggleAdminBlock('${t}')"`}${tooltip}>${t}${isBooked?'<br><span style="font-size:.55rem">marc.</span>':''}</div>`;
+    return `<div class="${cls}" data-time="${t}"${isBooked?'':' onclick="toggleAdminBlock(\''+t+'\')"'}${tooltip}>${t}${isBooked?'<br><span style="font-size:.55rem">marc.</span>':''}</div>`;
   }).join('');
   document.getElementById('adminBlockSlots').innerHTML=html;
 }
@@ -1721,7 +1724,7 @@ function renderAdminBlockSlots(ds){
 function toggleAdminBlock(t){
   if(!adminCalDate)return;
 
-  const el = document.querySelector(`#adminBlockSlots .slot[data-time="${t}"]`);
+  const el = document.querySelector(`#adminBlockSlots .block-slot-btn[data-time="${t}"]`);
   if(el) el.classList.toggle('selected');
 }
 
@@ -1729,7 +1732,7 @@ function saveAdminBlocks(){
   if(!adminCalDate)return;
 
   const blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
-  const slots = document.querySelectorAll('#adminBlockSlots .slot.selected');
+  const slots = document.querySelectorAll('#adminBlockSlots .block-slot-btn.selected');
 
   slots.forEach(slot => {
     const t = slot.getAttribute('data-time');
