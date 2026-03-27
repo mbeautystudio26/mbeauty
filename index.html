@@ -1634,8 +1634,8 @@ async function clearCancelledBookings(){
 }
 
 // ===== UTILS =====
-function scrollToBooking(){document.getElementById('marcacoes').scrollIntoView({behavior:'smooth'});}
-function scrollToServices(){document.getElementById('servicos').scrollIntoView({behavior:'smooth'});}
+window.scrollToBooking = function(){document.getElementById('marcacoes').scrollIntoView({behavior:'smooth'});}
+window.scrollToServices = function(){document.getElementById('servicos').scrollIntoView({behavior:'smooth'});}
 
 
 
@@ -1743,7 +1743,7 @@ renderCalendar();
 if(document.getElementById("adminCalWrap")){}// admin cal init on panel open
 
 // ===== PRICELIST PANEL =====
-function openPricelist(){
+window.openPricelist = function(){
   document.getElementById('plOverlay').classList.add('show');
   document.getElementById('plPanel').classList.add('show');
   document.body.style.overflow='hidden';
@@ -1754,7 +1754,6 @@ function closePricelist(){
   document.body.style.overflow='';
 }
 function openPlZoom(i){
-  if (event) event.stopPropagation();
   const imgs = document.querySelectorAll('.pl-card img');
   document.getElementById('plZoomImg').src = imgs[i].src;
   document.getElementById('plZoom').classList.add('show');
@@ -1841,6 +1840,18 @@ document.addEventListener('keydown', e=>{
   <img id="plZoomImg" src="" alt="Preçário ampliado">
   <div class="pl-zoom-hint">Clique em qualquer lugar para fechar · ESC</div>
 </div>
+<script>
+window.openPricelist = function(){
+  document.getElementById('precario').scrollIntoView({behavior:'smooth'});
+};
 
+window.bookService = function(service){
+  document.getElementById('marcacoes').scrollIntoView({behavior:'smooth'});
+};
+
+window.closePlZoom = function(){
+  document.getElementById('plZoom').classList.remove('show');
+};
+</script>
 </body>
 </html>
