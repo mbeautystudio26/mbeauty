@@ -293,22 +293,22 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
 @media(max-width:820px){.pl-grid{grid-template-columns:1fr;padding:8px 5% 48px}}
 
 .pl-grid.swipe-gallery {
-  display: flex !important;
-  flex-wrap: nowrap !important;
+  display: grid !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: 85% !important;
   gap: 24px !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
-  grid-template-columns: none !important;
   padding: 8px 5% 24px !important;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x;
+  overscroll-behavior-x: contain;
 }
 
 .pl-grid.swipe-gallery .pl-card {
-  flex: 0 0 320px !important;
-  min-width: 320px !important;
   scroll-snap-align: start;
+  min-width: 0 !important;
 }
 
 .pl-grid.swipe-gallery::-webkit-scrollbar {
@@ -320,10 +320,9 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
   border-radius: 999px;
 }
 
-@media (max-width: 768px) {
-  .pl-grid.swipe-gallery .pl-card {
-    flex: 0 0 85% !important;
-    min-width: 85% !important;
+@media (min-width: 769px) {
+  .pl-grid.swipe-gallery {
+    grid-auto-columns: 320px !important;
   }
 }
 
@@ -1834,7 +1833,7 @@ document.addEventListener('keydown', e=>{
   </div>
 
   <div class="pl-card" onclick="openPlZoom(2)">
-    <img class="pl-card-img" src="img/precario.png" style="width:100%;">
+    <img class="pl-card-img" src="img/precario.png">
     <div class="pl-card-lbl">
       <div class="pl-card-title">✨ Sobrancelhas & Facial</div>
       <div class="pl-card-hint">Clique para ampliar</div>
