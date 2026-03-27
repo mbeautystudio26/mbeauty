@@ -1735,7 +1735,7 @@ function saveAdminBlocks(){
   const slots = document.querySelectorAll('#adminBlockSlots .block-slot-btn.selected');
 
   slots.forEach(slot => {
-    const t = slot.getAttribute('data-time');
+    const t = slot.dataset.time;
     if(t && !blocked.includes(t)) blocked.push(t);
   });
 
