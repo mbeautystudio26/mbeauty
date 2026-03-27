@@ -1739,6 +1739,8 @@ function saveAdminBlocks(){
     if(t && !blocked.includes(t)) blocked.push(t);
   });
 
+  console.log('selecionados para bloquear:', blocked);
+  
   localStorage.setItem(
     getAdminBlockKey(adminCalProf, adminCalDate),
     JSON.stringify(blocked)
