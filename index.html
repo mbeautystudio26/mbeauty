@@ -1830,7 +1830,7 @@ document.addEventListener('keydown', e=>{
   <div class="pl-cta">
     <h3>Pronta para o seu momento de <em style="font-style:italic">beleza</em>?</h3>
     <p>Marque já o seu serviço e cuide de si</p>
-    <button class="pl-cta-btn" onclick="closePricelist();scrollToBooking()">Fazer Marcação →</button>
+    <button class="pl-cta-btn" onclick="closePlZoom();scrollToBooking()">Fazer Marcação →</button>
   </div>
 </div>
 
@@ -1840,18 +1840,6 @@ document.addEventListener('keydown', e=>{
   <img id="plZoomImg" src="" alt="Preçário ampliado">
   <div class="pl-zoom-hint">Clique em qualquer lugar para fechar · ESC</div>
 </div>
-<script>
-window.openPricelist = function(){
-  document.getElementById('precario').scrollIntoView({behavior:'smooth'});
-};
 
-window.bookService = function(service){
-  document.getElementById('marcacoes').scrollIntoView({behavior:'smooth'});
-};
-
-window.closePlZoom = function(){
-  document.getElementById('plZoom').classList.remove('show');
-};
-</script>
 </body>
 </html>
