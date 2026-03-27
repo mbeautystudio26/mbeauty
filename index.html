@@ -1754,7 +1754,7 @@ function closePricelist(){
   document.body.style.overflow='';
 }
 function openPlZoom(i){
-  event.stopPropagation();
+  if (event) event.stopPropagation();
   const imgs = document.querySelectorAll('.pl-card img');
   document.getElementById('plZoomImg').src = imgs[i].src;
   document.getElementById('plZoom').classList.add('show');
