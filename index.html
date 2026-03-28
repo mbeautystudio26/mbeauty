@@ -1302,7 +1302,7 @@ async function loadBookingsFromSheet() {
         : String(row.Status || '').trim().toUpperCase() === 'CANCELADO'
         ? 'cancelled'
         : 'pending',
-      professional: row.Professional || '',
+      professional: row.Profissional || row.Professional || '',
     }));
 
   } catch(e) {
