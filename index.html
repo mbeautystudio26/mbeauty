@@ -1278,6 +1278,10 @@ async function saveBookingToSheet(bookingObj) {
 const resultText = await res.text();
 console.log("RESPOSTA BRUTA BACKEND:", resultText);
   
+ if (resultText !== "OK") {
+  console.warn("Resposta inesperada do backend:", resultText);
+}
+  
   } catch(e) {
     console.warn('Sheet save error:', e);
   }
