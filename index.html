@@ -1275,8 +1275,8 @@ async function saveBookingToSheet(bookingObj) {
   })
 });
 
-const result = await res.json();
-console.log("RESPOSTA BACKEND:", result);
+const resultText = await res.text();
+console.log("RESPOSTA BRUTA BACKEND:", resultText);
   
   } catch(e) {
     console.warn('Sheet save error:', e);
