@@ -1256,24 +1256,28 @@ let bookings = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
 async function saveBookingToSheet(bookingObj) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
   try {
-    await fetch(SHEETS_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: new URLSearchParams({
-        action: 'save',
-        nome: bookingObj.name,
-        telefone: bookingObj.phone,
-        email: bookingObj.email,
-        servico: bookingObj.service,
-        data: bookingObj.date,
-        hora: bookingObj.time,
-        notas: bookingObj.notes || '',
-        professional: bookingObj.professional,
-      })
-    });
+   console.log("ENTREI NA saveBookingToSheet", bookingObj);
+    const res = await fetch(SHEETS_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
+  body: new URLSearchParams({
+    action: 'save',
+    name: bookingObj.name,
+    telefone: bookingObj.phone,
+    email: bookingObj.email,
+    servico: bookingObj.service,
+    data: bookingObj.date,
+    hora: bookingObj.time,
+    notas: bookingObj.notes || '',
+    professional: bookingObj.professional,
+  })
+});
+
+const result = await res.json();
+console.log("RESPOSTA BACKEND:", result);
+  
   } catch(e) {
     console.warn('Sheet save error:', e);
   }
