@@ -1150,7 +1150,7 @@ function addToBasket(){
     const itemBlocked=getBlockedSlots(item.time,getDuration(item.service));
     if(newBlocked.some(b=>itemBlocked.includes(b))){alert('Este horário conflitua com "'+item.service+'" já adicionado. Escolha outro horário.');return;}
   }
-  basketItems.push({service:svc,professional:selectedProfessional,time:selectedTime});
+  basketItems.push({service:svc,professional:selectedProfessional,date:selectedDate,time:selectedTime});
   selectedTime=null;
   document.getElementById('serviceSelect').value='';
   document.getElementById('serviceHint').style.display='block';
@@ -1221,7 +1221,7 @@ function renderSlots(ds){
     adminBlocks.forEach(s=>blockedExisting.add(s));
   }
   const blockedBasket=new Set();
-  basketItems.forEach(it=>getBlockedSlots(it.time,getDuration(it.service)).forEach(s=>blockedBasket.add(s)));
+  basketItems.filter(it=>it.date===ds).forEach(it=>getBlockedSlots(it.time,getDuration(it.service)).forEach(s=>blockedBasket.add(s)));
   const curSvc=document.getElementById('serviceSelect')?document.getElementById('serviceSelect').value:'';
   const curDur=curSvc?getDuration(curSvc):30;
   let slotsHtml='';
