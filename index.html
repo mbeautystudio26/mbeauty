@@ -910,9 +910,9 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
       <div class="login-error" id="loginError">Senha incorreta. Tente novamente.</div>
       <div class="form-group">
         <label class="form-label">Senha</label>
-        <input type="password" class="form-input" id="adminPass" placeholder="••••••••" onkeydown="if(event.key==='Enter'){event.preventDefault();handleAdminLogin();}" style="background:var(--rose-pale)">
+        <input type="password" class="form-input" id="adminPass" placeholder="••••••••" onkeydown="if(event.key==='Enter'){event.preventDefault();doLogin(event);}" style="background:var(--rose-pale)">
       </div>
-      <button class="submit-btn" onclick="handleAdminLogin()">Entrar no Painel</button>
+      <button type="button" class="submit-btn" onclick="doLogin(event)">Entrar no Painel</button>
       
     </div>
   </div>
