@@ -1294,6 +1294,27 @@ console.log("RESPOSTA BRUTA BACKEND:", resultText);
     console.warn('Sheet save error:', e);
   }
 }
+async function loadBlocksFromSheet() {
+  if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return [];
+
+  try {
+    const r = await fetch(SHEETS_URL + '?action=getBlocks');
+    const data = await r.json();
+
+    if (!Array.isArray(data)) return [];
+
+    return data.map(row => ({
+      id: row.id,
+      profissional: row.Profissional || row.profissional || '',
+      data: row.Data || row.data || '',
+      hora: formatSheetTime(row.Hora || row.hora || ''),
+      estado: row.Estado || row.estado || ''
+    }));
+  } catch (e) {
+    console.warn('Sheet blocks load error:', e);
+    return [];
+  }
+}
 
 async function saveBlockToSheet(profissional, data, hora) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
@@ -1753,6 +1774,7 @@ let adminCalDate = null;
 let adminCalMonth = new Date().getMonth();
 let adminCalYear = new Date().getFullYear();
 let adminSelectedSlots = [];
+let adminBlocksFromSheet = [];
 
 function canEditAdminCalendar(){
   return adminCalProf === selectedProfile;
@@ -1804,8 +1826,10 @@ function changeAdminCalMonth(dir){
 
 function getAdminBlockKey(prof,date){return 'mbeauty_blocks_'+prof+'_'+date;}
 
-function getAdminBlocksForDate(prof,date){
-  try{return JSON.parse(localStorage.getItem(getAdminBlockKey(prof,date))||'[]');}catch(e){return[];}
+function getAdminBlocksForDate(prof, date){
+  return adminBlocksFromSheet
+    .filter(b => b.profissional === prof && b.data === date && String(b.estado || '').toUpperCase() !== 'INATIVO')
+    .map(b => b.hora);
 }
 
 function selectAdminCalDate(ds){
@@ -1961,6 +1985,10 @@ let _adminSeq=[];
 let _touchSeq=[];
 document.addEventListener('DOMContentLoaded',function(){
    loadBookingsFromSheet().then(sheetData => {
+   loadBlocksFromSheet().then(blocks => {
+  adminBlocksFromSheet = blocks;
+  }); 
+    
     const localData = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
 
     const mergedMap = new Map();
