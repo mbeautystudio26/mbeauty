@@ -1308,7 +1308,9 @@ if (!Array.isArray(data)) return [];
     phone: String(row.Telefone || ''),
     email: row.Email || '',
     service: row['Serviço'] || row.Servico || '',
-    date: rawDate.slice(0, 10),
+    date: new Date(rawDate).toLocaleDateString('en-CA', {
+      timeZone: 'Europe/Lisbon'
+    }),
     time: formatSheetTime(row.Hora),
     notes: row.Notas || '',
     status: String(row.Status || '').trim().toUpperCase() === 'CONFIRMADO'
