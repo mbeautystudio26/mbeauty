@@ -1256,7 +1256,7 @@ let bookings = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
 async function saveBookingToSheet(bookingObj) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
   try {
-   console.log("ENTREI NA saveBookingToSheet", bookingObj);
+   console.log("BOOKING OBJ:", bookingObj);
     const res = await fetch(SHEETS_URL, {
   method: "POST",
   headers: {
