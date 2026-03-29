@@ -1587,14 +1587,16 @@ function selectProfile(name){selectedProfile=name;document.querySelectorAll('.pr
 function doLogin(e){
   if(e) e.preventDefault();
 
-  // 🔒 Obrigar a escolher profissional
   if(!selectedProfile){
     document.getElementById('loginError').textContent = 'Selecione primeiro a profissional.';
     document.getElementById('loginError').classList.add('show');
     return;
   }
 
- async function handleAdminLogin(){
+  handleAdminLogin();
+}
+
+async function handleAdminLogin(){
   var pass = document.getElementById('adminPass').value;
 
   if(!pass){
@@ -1609,9 +1611,9 @@ function doLogin(e){
     formData.append('password', pass);
 
     const res = await fetch(SHEETS_URL, {
-  method: 'POST',
-  body: formData
-});
+      method: 'POST',
+      body: formData
+    });
 
     const data = await res.json();
 
