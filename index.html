@@ -1270,6 +1270,7 @@ async function saveBookingToSheet(bookingObj) {
     servico: bookingObj.service,
     data: bookingObj.date,
     hora: bookingObj.time,
+    duracao: bookingObj.duration,
     notas: bookingObj.notes || '',
     professional: bookingObj.professional,
   })
@@ -1406,10 +1407,30 @@ function submitBooking(){
   
   console.log("VALORES FORM", { name, phone, email, notes });
   const savedEntries=[];
+  
   basketItems.forEach(it=>{
-    const b={id:Date.now()+Math.random(),professional:it.professional||selectedProfessional,service:it.service,name,phone,email,notes,date:selectedDate,time:it.time,duration:getDuration(it.service),status:'pending',createdAt:new Date().toISOString()};
-    bookings.push(b);savedEntries.push(b);
-  });
+
+  const duracao = serviceDurations[it.service] || 60;
+
+  const b={
+    id:Date.now()+Math.random(),
+    professional:it.professional||selectedProfessional,
+    service:it.service,
+    name,
+    phone,
+    email,
+    notes,
+    date:selectedDate,
+    time:it.time,
+    duration: duracao
+  };
+
+  bookings.push(b);
+  savedEntries.push(b);
+
+});
+ 
+ 
   saveBookingsLocal();
   // Save each entry to Google Sheet
   savedEntries.forEach(b => saveBookingToSheet(b));
