@@ -1281,8 +1281,8 @@ console.log("RESPOSTA BRUTA BACKEND:", resultText);
  if (resultText !== "OK") {
   console.warn("Resposta inesperada do backend:", resultText);
 }
-  
-  } catch(e) {
+
+} catch(e) {
     console.warn('Sheet save error:', e);
   }
 }
@@ -1396,6 +1396,7 @@ function submitBooking(){
   if(!name){alert('Por favor insira o seu nome.');return;}
   if(!phone){alert('Por favor insira o seu telemóvel.');return;}
   
+  console.log("VALORES FORM", { name, phone, email, notes });
   const savedEntries=[];
   basketItems.forEach(it=>{
     const b={id:Date.now()+Math.random(),professional:it.professional||selectedProfessional,service:it.service,name,phone,email,notes,date:selectedDate,time:it.time,duration:getDuration(it.service),status:'pending',createdAt:new Date().toISOString()};
