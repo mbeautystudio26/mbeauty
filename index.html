@@ -1609,7 +1609,8 @@ async function handleAdminLogin(){
     const formData = new URLSearchParams();
     formData.append('action', 'login');
     formData.append('password', pass);
-
+    formData.append('profissional', selectedProfile);
+    
     const res = await fetch(SHEETS_URL, {
       method: 'POST',
       body: formData
