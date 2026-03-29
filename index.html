@@ -1594,19 +1594,49 @@ function doLogin(e){
     return;
   }
 
+ async function handleAdminLogin(){
   var pass = document.getElementById('adminPass').value;
 
-  if(pass === 'admin123'){
-    document.getElementById('loginError').classList.remove('show');
-    closeAdmin();
-    openAdminPanel();
-  } else {
+  if(!pass){
+    document.getElementById('loginError').textContent = 'Insere a password.';
+    document.getElementById('loginError').classList.add('show');
+    return;
+  }
+
+  try {
+    const formData = new URLSearchParams();
+    formData.append('action', 'login');
+    formData.append('password', pass);
+
+    const res = await fetch(SHEETS_URL, {
+  method: 'POST',
+  body: formData
+});
+
+    const data = await res.json();
+
+    if (data.ok) {
+      document.getElementById('loginError').classList.remove('show');
+      document.getElementById('adminPass').value = '';
+      closeAdmin();
+      openAdminPanel();
+      return;
+    }
+
     document.getElementById('loginError').textContent = 'Senha incorreta. Tente novamente.';
     document.getElementById('loginError').classList.add('show');
     document.getElementById('adminPass').value = '';
     document.getElementById('adminPass').focus();
+
+  } catch (err) {
+    document.getElementById('loginError').textContent = 'Erro ao ligar ao servidor.';
+    document.getElementById('loginError').classList.add('show');
+    console.error(err);
   }
 }
+
+}
+ 
 
 function openAdminPanel(){
   document.getElementById('adminAvatarEl').textContent=selectedProfile[0];
