@@ -135,6 +135,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(253,247,249,
 .slot:hover:not(.unavailable){background:var(--rose-pale);border-color:var(--rose);color:var(--rose-deep)}
 .slot.selected{background:linear-gradient(135deg,var(--rose-deep),#9e3f62);color:white;border-color:var(--rose-deep)}
 .slot.unavailable{background:rgba(122,69,96,.05);color:rgba(122,69,96,.28);cursor:default;text-decoration:line-through}
+
+.block-slot-btn.booked-gold {
+  background: linear-gradient(135deg, #d4af37, #f1d27a);
+  color: #2c1520;
+  border: 1px solid #c9a227;
+  font-weight: 600;
+}
 .submit-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--rose-deep),#9e3f62);color:white;border:none;font-family:'Raleway',sans-serif;font-size:.78rem;letter-spacing:.17em;text-transform:uppercase;cursor:pointer;transition:all .3s;font-weight:500;margin-top:6px}
 .submit-btn:hover{background:linear-gradient(135deg,#a07830,var(--rose-deep));box-shadow:0 4px 20px rgba(192,82,122,.4)}
 .booking-notice{display:flex;align-items:flex-start;gap:10px;background:var(--gold-pale);border:1px solid var(--border-gold);padding:13px 15px;margin-top:14px}
@@ -1767,10 +1774,10 @@ function renderAdminBlockSlots(ds){
   const isSelected = adminSelectedSlots.includes(t);
 
   let cls = 'block-slot-btn';
-  if(isBlocked) cls += ' blocked';
-  if(isBooked) cls += ' unavailable';
-  if(isSelected) cls += ' selected';
-  if(!canEdit) cls += ' read-only';
+if(isBlocked) cls += ' blocked';
+if(isBooked) cls += ' unavailable booked-gold';
+if(isSelected) cls += ' selected';
+if(!canEdit) cls += ' read-only';
   
   const tooltip = isBooked ? ' title="Horário com marcação"' : '';
 
