@@ -1295,6 +1295,31 @@ console.log("RESPOSTA BRUTA BACKEND:", resultText);
   }
 }
 
+async function saveBlockToSheet(profissional, data, hora) {
+  if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
+
+  try {
+    const res = await fetch(SHEETS_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        action: 'saveBlock',
+        profissional: profissional,
+        data: data,
+        hora: hora
+      })
+    });
+
+    const resultText = await res.text();
+    console.log("RESPOSTA BLOQUEIO:", resultText);
+  } catch (e) {
+    console.warn('Sheet block save error:', e);
+  }
+}
+
+
 async function loadBookingsFromSheet() {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return [];
 
@@ -1857,10 +1882,11 @@ function saveAdminBlocks(){
   const blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
 
   adminSelectedSlots.forEach(t => {
-    if(!blocked.includes(t)){
-      blocked.push(t);
-    }
-  });
+  if(!blocked.includes(t)){
+    blocked.push(t);
+    saveBlockToSheet(adminCalProf, adminCalDate, t);
+  }
+});
 
   localStorage.setItem(
     getAdminBlockKey(adminCalProf, adminCalDate),
