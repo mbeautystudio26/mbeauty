@@ -1995,7 +1995,8 @@ alert('CLIQUEI EM DESBLOQUEAR');
     b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t
   );
   const rowId = blockToUnlock ? blockToUnlock.id : 0;
-
+   console.log('BLOCK TO UNLOCK:', blockToUnlock);
+   console.log('ROW ID:', rowId);
   adminBlocksFromSheet = adminBlocksFromSheet.filter(b =>
     !(b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t)
   );
