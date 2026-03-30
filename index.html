@@ -1359,8 +1359,10 @@ async function saveBlockToSheet(profissional, data, hora) {
 
     const resultText = await res.text();
     console.log("RESPOSTA DESBLOQUEIO:", resultText);
+    return resultText;
   } catch (e) {
     console.warn('Sheet unlock error:', e);
+    return null;
   }
 }
 
@@ -1975,16 +1977,16 @@ async function unlockSelectedAdminBlocks(){
 
   let blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
 
-for (const t of adminSelectedSlots) {
-  const i = blocked.indexOf(t);
-  if (i > -1) blocked.splice(i, 1);
+  for (const t of adminSelectedSlots) {
+    const i = blocked.indexOf(t);
+    if (i > -1) blocked.splice(i, 1);
 
-  adminBlocksFromSheet = adminBlocksFromSheet.filter(b =>
-    !(b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t)
-  );
+    adminBlocksFromSheet = adminBlocksFromSheet.filter(b =>
+      !(b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t)
+    );
 
-  await unlockBlockOnSheet(adminCalProf, adminCalDate, t);
-}
+    await unlockBlockOnSheet(adminCalProf, adminCalDate, t);
+  }
 
   adminSelectedSlots = [];
   renderAdminBlockSlots(adminCalDate);
