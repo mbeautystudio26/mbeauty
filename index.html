@@ -1938,21 +1938,27 @@ async function saveAdminBlocks(){
 
   const blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
 
-  for (const t of adminSelectedSlots) {
+  const slotsToSave = [...new Set(adminSelectedSlots)].filter(t => !blocked.includes(t));
 
-    if (!blocked.includes(t)) {
-      blocked.push(t);
-
-      adminBlocksFromSheet.push({
-        profissional: adminCalProf,
-        data: adminCalDate,
-        hora: t,
-        estado: 'ATIVO'
-      });
-
-      await saveBlockToSheet(adminCalProf, adminCalDate, t);
-    }
+  if(!slotsToSave.length){
+    alert('Os horários selecionados já estão bloqueados.');
+    return;
   }
+
+  slotsToSave.forEach(t => {
+    blocked.push(t);
+
+    adminBlocksFromSheet.push({
+      profissional: adminCalProf,
+      data: adminCalDate,
+      hora: t,
+      estado: 'ATIVO'
+    });
+  });
+
+  await Promise.all(
+    slotsToSave.map(t => saveBlockToSheet(adminCalProf, adminCalDate, t))
+  );
 
   localStorage.setItem(
     getAdminBlockKey(adminCalProf, adminCalDate),
