@@ -1340,10 +1340,12 @@ async function saveBlockToSheet(profissional, data, hora) {
   }
 }
 
- async function unlockBlockOnSheet(profissional, data, hora) {
-  if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
+async function unlockBlockOnSheet(profissional, data, hora) {
+  if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return null;
 
   try {
+    console.log('A ENVIAR DESBLOQUEIO:', profissional, data, hora);
+
     const res = await fetch(SHEETS_URL, {
       method: "POST",
       headers: {
@@ -1357,14 +1359,17 @@ async function saveBlockToSheet(profissional, data, hora) {
       })
     });
 
+    console.log('STATUS DESBLOQUEIO:', res.status);
+
     const resultText = await res.text();
     console.log("RESPOSTA DESBLOQUEIO:", resultText);
+
     return resultText;
   } catch (e) {
     console.warn('Sheet unlock error:', e);
     return null;
   }
-}
+}}
 
 async function loadBookingsFromSheet() {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return [];
