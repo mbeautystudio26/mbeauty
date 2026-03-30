@@ -1924,7 +1924,8 @@ const idx = adminSelectedSlots.indexOf(t);
   renderAdminBlockSlots(adminCalDate);
 }
 
-function saveAdminBlocks(){
+async function saveAdminBlocks(){
+
   if(!adminCalDate){
     alert('Selecione primeiro um dia.');
     return;
@@ -1937,20 +1938,21 @@ function saveAdminBlocks(){
 
   const blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
 
-adminSelectedSlots.forEach(t => {
-  if(!blocked.includes(t)){
-    blocked.push(t);
+  for (const t of adminSelectedSlots) {
 
-    adminBlocksFromSheet.push({
-      profissional: adminCalProf,
-      data: adminCalDate,
-      hora: t,
-      estado: 'ATIVO'
-    });
+    if (!blocked.includes(t)) {
+      blocked.push(t);
 
-    saveBlockToSheet(adminCalProf, adminCalDate, t);
+      adminBlocksFromSheet.push({
+        profissional: adminCalProf,
+        data: adminCalDate,
+        hora: t,
+        estado: 'ATIVO'
+      });
+
+      await saveBlockToSheet(adminCalProf, adminCalDate, t);
+    }
   }
-});
 
   localStorage.setItem(
     getAdminBlockKey(adminCalProf, adminCalDate),
