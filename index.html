@@ -2016,13 +2016,14 @@ async function unlockSelectedAdminBlocks(){
 );
 
 matches.forEach(match => {
-  if (match.id >= 2) {
-    pendingUnlocks.push({
-      hora: t,
-      rowId: match.id
-    });
-  }
-});
+    if (match.id >= 2) {
+      pendingUnlocks.push({
+        hora: t,
+        rowId: match.id
+      });
+    }
+  });
+}
 
 
   if(!pendingUnlocks.length){
