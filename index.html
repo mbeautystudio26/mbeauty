@@ -2009,11 +2009,20 @@ async function unlockSelectedAdminBlocks(){
     const i = blocked.indexOf(t);
     if (i > -1) blocked.splice(i, 1);
 
-    const blockToUnlock = adminBlocksFromSheet.find(b =>
-      b.profissional === adminCalProf &&
-      b.data === adminCalDate &&
-      b.hora === t
-    );
+    const matches = adminBlocksFromSheet.filter(b =>
+  b.profissional === adminCalProf &&
+  b.data === adminCalDate &&
+  b.hora === t
+);
+
+matches.forEach(match => {
+  if (match.id >= 2) {
+    pendingUnlocks.push({
+      hora: t,
+      rowId: match.id
+    });
+  }
+});
 
     const rowId = blockToUnlock ? blockToUnlock.id : 0;
 
