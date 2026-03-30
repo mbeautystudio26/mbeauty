@@ -1929,9 +1929,17 @@ function saveAdminBlocks(){
 
   const blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
 
-  adminSelectedSlots.forEach(t => {
+adminSelectedSlots.forEach(t => {
   if(!blocked.includes(t)){
     blocked.push(t);
+
+    adminBlocksFromSheet.push({
+      profissional: adminCalProf,
+      data: adminCalDate,
+      hora: t,
+      estado: 'ATIVO'
+    });
+
     saveBlockToSheet(adminCalProf, adminCalDate, t);
   }
 });
