@@ -1982,10 +1982,7 @@ async function saveAdminBlocks(){
 }
 
 async function unlockSelectedAdminBlocks(){
-  
-console.log('CLIQUEI EM DESBLOQUEAR');
-alert('CLIQUEI EM DESBLOQUEAR'); 
-  
+
   if(!adminCalDate){
     alert('Selecione primeiro um dia.');
     return;
@@ -2004,22 +2001,54 @@ alert('CLIQUEI EM DESBLOQUEAR');
 
   let blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
 
+  const pendingUnlocks = [];
+
   for (const t of adminSelectedSlots) {
-  const i = blocked.indexOf(t);
-  if (i > -1) blocked.splice(i, 1);
+    const i = blocked.indexOf(t);
+    if (i > -1) blocked.splice(i, 1);
 
-  const blockToUnlock = adminBlocksFromSheet.find(b =>
-    b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t
+    const blockToUnlock = adminBlocksFromSheet.find(b =>
+      b.profissional === adminCalProf &&
+      b.data === adminCalDate &&
+      b.hora === t
+    );
+
+    const rowId = blockToUnlock ? blockToUnlock.id : 0;
+
+    if (rowId >= 2) {
+      pendingUnlocks.push({
+        hora: t,
+        rowId: rowId
+      });
+    }
+  }
+
+  if(!pendingUnlocks.length){
+    alert('Não foi possível encontrar os bloqueios selecionados.');
+    return;
+  }
+
+  const results = await Promise.all(
+    pendingUnlocks.map(item =>
+      unlockBlockOnSheet(adminCalProf, adminCalDate, item.hora, item.rowId)
+    )
   );
-  const rowId = blockToUnlock ? blockToUnlock.id : 0;
-   console.log('BLOCK TO UNLOCK:', blockToUnlock);
-   console.log('ROW ID:', rowId);
+
+  console.log('RESULTADOS DESBLOQUEIO:', results);
+
   adminBlocksFromSheet = adminBlocksFromSheet.filter(b =>
-    !(b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t)
+    !pendingUnlocks.some(item =>
+      b.profissional === adminCalProf &&
+      b.data === adminCalDate &&
+      b.hora === item.hora &&
+      b.id === item.rowId
+    )
   );
 
-  await unlockBlockOnSheet(adminCalProf, adminCalDate, t, rowId);
-}
+  localStorage.setItem(
+    getAdminBlockKey(adminCalProf, adminCalDate),
+    JSON.stringify(blocked)
+  );
 
   adminSelectedSlots = [];
   renderAdminBlockSlots(adminCalDate);
