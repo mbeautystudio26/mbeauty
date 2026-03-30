@@ -1340,11 +1340,11 @@ async function saveBlockToSheet(profissional, data, hora) {
   }
 }
 
- async function unlockBlockOnSheet(profissional, data, hora) {
+ async function unlockBlockOnSheet(profissional, data, hora, rowId) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return null;
 
   try {
-    console.log('A ENVIAR DESBLOQUEIO:', profissional, data, hora);
+    console.log('A ENVIAR DESBLOQUEIO:', profissional, data, hora, rowId);
 
     const res = await fetch(SHEETS_URL, {
       method: "POST",
@@ -1355,7 +1355,8 @@ async function saveBlockToSheet(profissional, data, hora) {
         action: 'unlockBlock',
         profissional: profissional,
         data: data,
-        hora: hora
+        hora: hora,
+        id: rowId
       })
     });
 
@@ -1987,15 +1988,20 @@ alert('CLIQUEI EM DESBLOQUEAR');
   let blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
 
   for (const t of adminSelectedSlots) {
-    const i = blocked.indexOf(t);
-    if (i > -1) blocked.splice(i, 1);
+  const i = blocked.indexOf(t);
+  if (i > -1) blocked.splice(i, 1);
 
-    adminBlocksFromSheet = adminBlocksFromSheet.filter(b =>
-      !(b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t)
-    );
+  const blockToUnlock = adminBlocksFromSheet.find(b =>
+    b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t
+  );
+  const rowId = blockToUnlock ? blockToUnlock.id : 0;
 
-    await unlockBlockOnSheet(adminCalProf, adminCalDate, t);
-  }
+  adminBlocksFromSheet = adminBlocksFromSheet.filter(b =>
+    !(b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t)
+  );
+
+  await unlockBlockOnSheet(adminCalProf, adminCalDate, t, rowId);
+}
 
   adminSelectedSlots = [];
   renderAdminBlockSlots(adminCalDate);
