@@ -1956,7 +1956,7 @@ adminSelectedSlots.forEach(t => {
   alert('✓ Horários bloqueados!');
 }
 
-function unlockSelectedAdminBlocks(){
+async function unlockSelectedAdminBlocks(){
   if(!adminCalDate){
     alert('Selecione primeiro um dia.');
     return;
@@ -1975,7 +1975,7 @@ function unlockSelectedAdminBlocks(){
 
   let blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
 
-adminSelectedSlots.forEach(t => {
+for (const t of adminSelectedSlots) {
   const i = blocked.indexOf(t);
   if (i > -1) blocked.splice(i, 1);
 
@@ -1983,8 +1983,8 @@ adminSelectedSlots.forEach(t => {
     !(b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t)
   );
 
-  unlockBlockOnSheet(adminCalProf, adminCalDate, t);
-});
+  await unlockBlockOnSheet(adminCalProf, adminCalDate, t);
+}
 
   adminSelectedSlots = [];
   renderAdminBlockSlots(adminCalDate);
