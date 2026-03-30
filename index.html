@@ -1840,8 +1840,12 @@ function renderAdminCal(){
     if(isSel)cls+=' selected';
     if(isToday)cls+=' today';
     const blockedCount=getAdminBlocksForDate(adminCalProf,ds).length;
+    const bookingCount=getAdminBookingsForDate(adminCalProf,ds).length;
     console.log('BLOQUEIOS DIA', adminCalProf, ds, blockedCount, adminBlocksFromSheet);
-    const indicator=blockedCount?`<span style="position:absolute;top:2px;right:3px;width:6px;height:6px;border-radius:50%;background:#e7a3b5"></span>`:'';
+    const blockIndicator=blockedCount?`<span style="position:absolute;top:2px;right:3px;width:6px;height:6px;border-radius:50%;background:#e7a3b5"></span>`:'';
+    const bookingIndicator=bookingCount?`<span style="position:absolute;top:2px;right:12px;width:6px;height:6px;border-radius:50%;background:#d4af37"></span>`:'';
+    const indicator=blockIndicator+bookingIndicator;
+    
     html+=`<div class="${cls}" style="position:relative"${(!isPast&&!isSunday)?` onclick="selectAdminCalDate('${ds}')"`:''}>${d}${indicator}</div>`;
   }
   html+='</div>';
@@ -1857,6 +1861,15 @@ function changeAdminCalMonth(dir){
 }
 
 function getAdminBlockKey(prof,date){return 'mbeauty_blocks_'+prof+'_'+date;}
+function getAdminBookingsForDate(prof, date){
+  const savedBookings = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
+
+  return savedBookings.filter(b =>
+    b.date === date &&
+    b.status !== 'cancelled' &&
+    b.professional === prof
+  );
+}
 
 function getAdminBlocksForDate(prof, date){
   return adminBlocksFromSheet
