@@ -1978,6 +1978,8 @@ async function saveAdminBlocks(){
   renderAdminBlockSlots(adminCalDate);
   renderAdminCal();
 
+  adminBlocksFromSheet = await loadBlocksFromSheet();
+
   alert('✓ Horários bloqueados!');
 }
 
