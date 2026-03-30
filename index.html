@@ -2024,15 +2024,6 @@ matches.forEach(match => {
   }
 });
 
-    const rowId = blockToUnlock ? blockToUnlock.id : 0;
-
-    if (rowId >= 2) {
-      pendingUnlocks.push({
-        hora: t,
-        rowId: rowId
-      });
-    }
-  }
 
   if(!pendingUnlocks.length){
     alert('Não foi possível encontrar os bloqueios selecionados.');
