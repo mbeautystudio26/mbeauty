@@ -1956,9 +1956,18 @@ async function saveAdminBlocks(){
     });
   });
 
-  await Promise.all(
-    slotsToSave.map(t => saveBlockToSheet(adminCalProf, adminCalDate, t))
-  );
+ await fetch(SHEETS_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
+  body: new URLSearchParams({
+    action: 'saveBlock',
+    profissional: adminCalProf,
+    data: adminCalDate,
+    horas: slotsToSave.join(',')
+  })
+});
 
   localStorage.setItem(
     getAdminBlockKey(adminCalProf, adminCalDate),
