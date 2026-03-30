@@ -1316,7 +1316,31 @@ async function loadBlocksFromSheet() {
   }
 }
 
-async function unlockBlockOnSheet(profissional, data, hora) {
+async function saveBlockToSheet(profissional, data, hora) {
+  if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
+
+  try {
+    const res = await fetch(SHEETS_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        action: 'saveBlock',
+        profissional: profissional,
+        data: data,
+        hora: hora
+      })
+    });
+
+    const resultText = await res.text();
+    console.log("RESPOSTA BLOQUEIO:", resultText);
+  } catch (e) {
+    console.warn('Sheet block save error:', e);
+  }
+}
+
+ async function unlockBlockOnSheet(profissional, data, hora) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return null;
 
   try {
@@ -1940,7 +1964,8 @@ adminSelectedSlots.forEach(t => {
 }
 
 async function unlockSelectedAdminBlocks(){
-  console.log('CLIQUEI EM DESBLOQUEAR');
+  
+console.log('CLIQUEI EM DESBLOQUEAR');
 alert('CLIQUEI EM DESBLOQUEAR'); 
   
   if(!adminCalDate){
