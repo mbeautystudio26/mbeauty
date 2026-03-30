@@ -1340,11 +1340,11 @@ async function saveBlockToSheet(profissional, data, hora) {
   }
 }
 
- async function unlockBlockOnSheet(profissional, data, hora, rowId) {
+ async function unlockBlockOnSheet(profissional, data, horas, rowIds) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return null;
 
   try {
-    console.log('A ENVIAR DESBLOQUEIO:', profissional, data, hora, rowId);
+    console.log('A ENVIAR DESBLOQUEIO:', profissional, data, horas, rowIds);
 
     const res = await fetch(SHEETS_URL, {
       method: "POST",
@@ -1355,8 +1355,8 @@ async function saveBlockToSheet(profissional, data, hora) {
         action: 'unlockBlock',
         profissional: profissional,
         data: data,
-        hora: hora,
-        id: rowId
+        horas: Array.isArray(horas) ? horas.join(',') : horas,
+        ids: Array.isArray(rowIds) ? rowIds.join(',') : rowIds
       })
     });
 
@@ -2030,11 +2030,17 @@ async function unlockSelectedAdminBlocks(){
     return;
   }
 
-  const results = await Promise.all(
-    pendingUnlocks.map(item =>
-      unlockBlockOnSheet(adminCalProf, adminCalDate, item.hora, item.rowId)
-    )
-  );
+  const horas = pendingUnlocks.map(item => item.hora);
+const ids = pendingUnlocks.map(item => item.rowId);
+
+const result = await unlockBlockOnSheet(
+  adminCalProf,
+  adminCalDate,
+  horas,
+  ids
+);
+
+console.log('RESULTADO DESBLOQUEIO:', result);
 
   console.log('RESULTADOS DESBLOQUEIO:', results);
 
