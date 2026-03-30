@@ -1340,6 +1340,29 @@ async function saveBlockToSheet(profissional, data, hora) {
   }
 }
 
+ async function unlockBlockOnSheet(profissional, data, hora) {
+  if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
+
+  try {
+    const res = await fetch(SHEETS_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        action: 'unlockBlock',
+        profissional: profissional,
+        data: data,
+        hora: hora
+      })
+    });
+
+    const resultText = await res.text();
+    console.log("RESPOSTA DESBLOQUEIO:", resultText);
+  } catch (e) {
+    console.warn('Sheet unlock error:', e);
+  }
+}
 
 async function loadBookingsFromSheet() {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return [];
@@ -1943,12 +1966,17 @@ function unlockSelectedAdminBlocks(){
   if(!confirmUnlock) return;
 
   let blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
-  blocked = blocked.filter(t => !adminSelectedSlots.includes(t));
 
-  localStorage.setItem(
-    getAdminBlockKey(adminCalProf, adminCalDate),
-    JSON.stringify(blocked)
+adminSelectedSlots.forEach(t => {
+  const i = blocked.indexOf(t);
+  if (i > -1) blocked.splice(i, 1);
+
+  adminBlocksFromSheet = adminBlocksFromSheet.filter(b =>
+    !(b.profissional === adminCalProf && b.data === adminCalDate && b.hora === t)
   );
+
+  unlockBlockOnSheet(adminCalProf, adminCalDate, t);
+});
 
   adminSelectedSlots = [];
   renderAdminBlockSlots(adminCalDate);
