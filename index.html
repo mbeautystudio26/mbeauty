@@ -1962,15 +1962,26 @@ const idx = adminSelectedSlots.indexOf(t);
 
   renderAdminBlockSlots(adminCalDate);
  }
-  function blockFullDay(){
-  if(!adminCalDate){
+async function blockFullDay(){
+  const dates = adminSelectedDates.length ? adminSelectedDates : [adminCalDate];
+
+  if(!dates.length || !dates[0]){
     alert('Seleciona um dia primeiro');
     return;
   }
 
-  adminSelectedSlots = [...ALL_SLOTS];
+  for(const ds of dates){
+    adminCalDate = ds;
+    adminSelectedSlots = [...ALL_SLOTS];
+    await saveAdminBlocks();
+  }
+
+  adminSelectedSlots = [];
+  await loadBlocksFromSheet();
+  renderAdminCal();
   renderAdminBlockSlots(adminCalDate);
-  saveAdminBlocks();
+
+  alert('Dias bloqueados com sucesso.');
 }
 
 async function unlockFullDay(){
