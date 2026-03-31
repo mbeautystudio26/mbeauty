@@ -1998,10 +1998,10 @@ async function blockFullDay(){
     alert('Erro ao bloquear os dias selecionados.');
   }
 }
- async function unlockFullDay(){
+ async function unlockFullDay() {
   const dates = adminSelectedDates.length ? adminSelectedDates : [adminCalDate];
 
-  if(!dates.length || !dates[0]){
+  if (!dates.length || !dates[0]) {
     alert('Seleciona um dia primeiro');
     return;
   }
@@ -2012,9 +2012,9 @@ async function blockFullDay(){
       : 'Tem a certeza que quer limpar este dia?'
   );
 
-  if(!confirmUnlock) return;
+  if (!confirmUnlock) return;
 
-  try{
+  try {
     const response = await fetch(SHEETS_URL, {
       method: "POST",
       headers: {
@@ -2035,8 +2035,8 @@ async function blockFullDay(){
     renderAdminCal();
     renderAdminBlockSlots(adminCalDate);
 
-    alert('Dias desbloqueados com sucesso.');
-  }catch(err){
+    alert('Dias limpos com sucesso.');
+  } catch (err) {
     console.error('Erro ao limpar dias:', err);
     alert('Erro ao limpar os dias.');
   }
