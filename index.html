@@ -1994,9 +1994,9 @@ async function blockFullDay(){
 
     alert('Dias bloqueados com sucesso.');
   }catch(err){
-    console.error('Erro ao bloquear dias completos:', err);
-    alert('Erro ao bloquear os dias selecionados.');
-  }
+  console.error('ERRO REAL:', err);
+  alert('ERRO REAL: ' + (err.message || err));
+}
 }
  async function unlockFullDay() {
   const dates = adminSelectedDates.length ? adminSelectedDates : [adminCalDate];
