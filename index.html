@@ -1975,30 +1975,59 @@ async function blockFullDay(){
   const blocked = getAdminBlocksForDate(adminCalProf, ds);
   const slotsToSave = ALL_SLOTS.filter(t => !blocked.includes(t));
 
-  if(!slotsToSave.length) return;
+  if(!slotsToSave.length){
+    return { ds, ok: true, skipped: true };
+  }
 
-  return fetch(SHEETS_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: new URLSearchParams({
-      action: 'saveBlock',
-      profissional: adminCalProf,
-      data: ds,
-      horas: slotsToSave.join(',')
-    })
-  });
+  try{
+    const response = await fetch(SHEETS_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        action: 'saveBlock',
+        profissional: adminCalProf,
+        data: ds,
+        horas: slotsToSave.join(',')
+      })
+    });
+
+    const text = await response.text();
+
+    return {
+      ds,
+      ok: response.ok,
+      skipped: false,
+      text
+    };
+  }catch(err){
+    return {
+      ds,
+      ok: false,
+      skipped: false,
+      error: String(err)
+    };
+  }
 });
 
-await Promise.all(requests);
+const results = await Promise.all(requests);
+
+const failed = results.filter(r => !r.ok);
+console.log('RESULTADOS BLOCK FULL DAY:', results);
+
+if(failed.length){
+  alert('Falharam alguns dias: ' + failed.map(r => r.ds).join(', '));
+}
 
     adminSelectedSlots = [];
     adminBlocksFromSheet = await loadBlocksFromSheet();
     renderAdminCal();
     renderAdminBlockSlots(adminCalDate);
 
-    alert('Dias bloqueados com sucesso.');
+    if(!failed.length){
+  alert('Dias bloqueados com sucesso.');
+}
   }catch(err){
     console.error('Erro ao bloquear dias completos:', err);
     alert('Erro ao bloquear os dias selecionados.');
