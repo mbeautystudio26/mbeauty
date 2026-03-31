@@ -1811,6 +1811,7 @@ let adminCalDate = null;
 let adminCalMonth = new Date().getMonth();
 let adminCalYear = new Date().getFullYear();
 let adminSelectedSlots = [];
+let adminSelectedDates = [];
 let adminBlocksFromSheet = [];
 
 function canEditAdminCalendar(){
@@ -1821,6 +1822,7 @@ function switchAdminCal(prof){
   adminCalProf = prof;
   adminCalDate = null;
   adminSelectedSlots = [];
+  adminSelectedDates = [];
   document.getElementById('adminCalTabBete').classList.toggle('active', prof==='Bete');
   document.getElementById('adminCalTabMarta').classList.toggle('active', prof==='Marta');
   document.getElementById('adminCalDateLabel').textContent = 'selecione um dia';
@@ -1840,7 +1842,7 @@ function renderAdminCal(){
   for(let d=1;d<=daysInMonth;d++){
     const date=new Date(adminCalYear,adminCalMonth,d);
     const ds=`${adminCalYear}-${String(adminCalMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isPast=date<today,isSunday=date.getDay()===0,isSel=adminCalDate===ds,isToday=date.getTime()===today.getTime();
+    const isPast=date<today,isSunday=date.getDay()===0,isSel=adminSelectedDates.includes(ds),isToday=date.getTime()===today.getTime();
     let cls='cal-day';
     if(isPast||isSunday)cls+=' past';
     if(isSel)cls+=' selected';
@@ -1852,7 +1854,7 @@ function renderAdminCal(){
     const bookingIndicator=bookingCount?`<span style="position:absolute;top:2px;right:12px;width:6px;height:6px;border-radius:50%;background:#d4af37"></span>`:'';
     const indicator=blockIndicator+bookingIndicator;
     
-    html+=`<div class="${cls}" style="position:relative"${(!isPast&&!isSunday)?` onclick="selectAdminCalDate('${ds}')"`:''}>${d}${indicator}</div>`;
+    html+=`<div class="${cls}" style="position:relative"${(!isPast&&!isSunday)?` onclick="selectAdminCalDate('${ds}', event)"`:''}>${d}${indicator}</div>`;
   }
   html+='</div>';
   const wrap=document.getElementById('adminCalWrap');
@@ -1883,12 +1885,30 @@ function getAdminBlocksForDate(prof, date){
     .map(b => b.hora);
 }
 
-function selectAdminCalDate(ds){
-  adminCalDate=ds;
+function selectAdminCalDate(ds, event){
+  const isCtrl = event && (event.ctrlKey || event.metaKey);
+
+  if(isCtrl){
+    const idx = adminSelectedDates.indexOf(ds);
+
+    if(idx > -1){
+      adminSelectedDates.splice(idx, 1);
+    }else{
+      adminSelectedDates.push(ds);
+    }
+
+    adminCalDate = ds;
+  }else{
+    adminSelectedDates = [ds];
+    adminCalDate = ds;
+  }
+
   renderAdminCal();
+
   const months=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-  const[y,m,d]=ds.split('-');
+  const [y,m,d]=ds.split('-');
   document.getElementById('adminCalDateLabel').textContent=d+' '+months[parseInt(m)-1]+' '+y;
+
   renderAdminBlockSlots(ds);
 }
 
