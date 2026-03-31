@@ -974,7 +974,7 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
           <button class="admin-save-blocks" onclick="unlockSelectedAdminBlocks()">🧹 Desbloquear Selecionados</button>
 
             <div style="display:flex; gap:8px; margin-top:10px;">
-             <button onclick="blockFullDay()" class="admin-save-blocks" style="width:50%;">📅 DIA COMPLETO</button>
+             <button id="btnFullDay" onclick="blockFullDay()" class="admin-save-blocks" style="width:50%;">📅 DIA COMPLETO</button>
              <button onclick="unlockFullDay()" class="admin-save-blocks" style="width:50%; background:#6b2d3e;">🧹 LIMPAR DIA</button>
                </div>
         
@@ -1963,12 +1963,17 @@ const idx = adminSelectedSlots.indexOf(t);
   renderAdminBlockSlots(adminCalDate);
  }
 async function blockFullDay(){
+  const btn = document.getElementById('btnFullDay');
+btn.disabled = true;
+  
   const dates = adminSelectedDates.length ? adminSelectedDates : [adminCalDate];
 
   if(!dates.length || !dates[0]){
     alert('Seleciona um dia primeiro');
     return;
   }
+
+  document.body.style.cursor = 'wait';
 
   try{
     console.time('BLOCK_FULL_DAY_TOTAL');
@@ -2017,9 +2022,12 @@ renderAdminBlockSlots(adminCalDate);
 
     console.timeEnd('BLOCK_FULL_DAY_TOTAL');
     alert('Dias bloqueados com sucesso.');
+    btn.disabled = false;
+  
   }catch(err){
   console.error('ERRO REAL:', err);
   alert('ERRO REAL: ' + (err.message || err));
+  btn.disabled = false;
 }
 }
  async function unlockFullDay() {
