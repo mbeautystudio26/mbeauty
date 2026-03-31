@@ -1971,25 +1971,27 @@ async function blockFullDay(){
   }
 
   try{
-    for(const ds of dates){
-      const blocked = getAdminBlocksForDate(adminCalProf, ds);
-      const slotsToSave = ALL_SLOTS.filter(t => !blocked.includes(t));
+    const requests = dates.map(async ds => {
+  const blocked = getAdminBlocksForDate(adminCalProf, ds);
+  const slotsToSave = ALL_SLOTS.filter(t => !blocked.includes(t));
 
-      if(!slotsToSave.length) continue;
+  if(!slotsToSave.length) return;
 
-      await fetch(SHEETS_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({
-          action: 'saveBlock',
-          profissional: adminCalProf,
-          data: ds,
-          horas: slotsToSave.join(',')
-        })
-      });
-    }
+  return fetch(SHEETS_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      action: 'saveBlock',
+      profissional: adminCalProf,
+      data: ds,
+      horas: slotsToSave.join(',')
+    })
+  });
+});
+
+await Promise.all(requests);
 
     adminSelectedSlots = [];
     adminBlocksFromSheet = await loadBlocksFromSheet();
