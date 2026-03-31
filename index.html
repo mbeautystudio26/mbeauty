@@ -1990,10 +1990,30 @@ async function blockFullDay(){
     console.timeEnd('BLOCK_FULL_DAY_FETCH');
     console.log('RESULTADO SAVE FULL DAY BATCH:', text);
 
-    adminSelectedSlots = [];
-    adminBlocksFromSheet = await loadBlocksFromSheet();
-    renderAdminCal();
-    renderAdminBlockSlots(adminCalDate);
+   adminSelectedSlots = [];
+
+dates.forEach(ds => {
+  ALL_SLOTS.forEach(hora => {
+    const exists = adminBlocksFromSheet.some(b =>
+      b.profissional === adminCalProf &&
+      b.data === ds &&
+      b.hora === hora &&
+      String(b.estado || '').toUpperCase() !== 'INATIVO'
+    );
+
+    if(!exists){
+      adminBlocksFromSheet.push({
+        profissional: adminCalProf,
+        data: ds,
+        hora,
+        estado: 'ATIVO'
+      });
+    }
+  });
+});
+
+renderAdminCal();
+renderAdminBlockSlots(adminCalDate);
 
     console.timeEnd('BLOCK_FULL_DAY_TOTAL');
     alert('Dias bloqueados com sucesso.');
