@@ -1813,7 +1813,7 @@ let adminCalYear = new Date().getFullYear();
 let adminSelectedSlots = [];
 let adminSelectedDates = [];
 let adminBlocksFromSheet = [];
-
+let isBlockingFullDay = false;
 function canEditAdminCalendar(){
   return adminCalProf === selectedProfile;
 }
@@ -1965,11 +1965,17 @@ const idx = adminSelectedSlots.indexOf(t);
 async function blockFullDay(){
   const btn = document.getElementById('btnFullDay');
 btn.disabled = true;
+  const panel = document.querySelector('.admin-cal-grid');
+if (panel) panel.style.pointerEvents = 'none';
+
   
   const dates = adminSelectedDates.length ? adminSelectedDates : [adminCalDate];
 
   if(!dates.length || !dates[0]){
     alert('Seleciona um dia primeiro');
+    btn.disabled = false;
+    if (panel) panel.style.pointerEvents = '';
+    document.body.style.cursor = 'default';
     return;
   }
 
@@ -2022,12 +2028,15 @@ renderAdminBlockSlots(adminCalDate);
 
     console.timeEnd('BLOCK_FULL_DAY_TOTAL');
     alert('Dias bloqueados com sucesso.');
-    btn.disabled = false;
+    
   
   }catch(err){
   console.error('ERRO REAL:', err);
   alert('ERRO REAL: ' + (err.message || err));
+} finally {
   btn.disabled = false;
+  if (panel) panel.style.pointerEvents = '';
+  document.body.style.cursor = 'default';
 }
 }
  async function unlockFullDay() {
