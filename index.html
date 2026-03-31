@@ -1998,6 +1998,53 @@ async function blockFullDay(){
     alert('Erro ao bloquear os dias selecionados.');
   }
 }
+  async function unlockFullDay(){
+  const dates = adminSelectedDates.length ? adminSelectedDates : [adminCalDate];
+
+  if(!dates.length || !dates[0]){
+    alert('Seleciona um dia primeiro');
+    return;
+  }
+
+  const confirmUnlock = confirm(
+    dates.length > 1
+      ? `Tem a certeza que quer limpar ${dates.length} dias?`
+      : 'Tem a certeza que quer limpar este dia?'
+  );
+
+  if(!confirmUnlock) return;
+
+  try{
+    for(const ds of dates){
+
+      const matches = adminBlocksFromSheet.filter(b =>
+        b.profissional === adminCalProf &&
+        b.data === ds &&
+        String(b.estado || '').toUpperCase() !== 'INATIVO'
+      );
+
+      if(!matches.length) continue;
+
+      const horas = matches.map(b => b.hora);
+      const ids = matches
+        .filter(b => b.id >= 2)
+        .map(b => b.id);
+
+      await unlockBlockOnSheet(adminCalProf, ds, horas, ids);
+    }
+
+    adminSelectedSlots = [];
+    adminBlocksFromSheet = await loadBlocksFromSheet();
+    renderAdminCal();
+    renderAdminBlockSlots(adminCalDate);
+
+    alert('Dias desbloqueados com sucesso.');
+  }catch(err){
+    console.error('Erro ao limpar dias:', err);
+    alert('Erro ao limpar os dias.');
+  }
+}
+
 
 async function saveAdminBlocks(){
 
