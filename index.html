@@ -1998,7 +1998,7 @@ async function blockFullDay(){
     alert('Erro ao bloquear os dias selecionados.');
   }
 }
-  async function unlockFullDay(){
+ async function unlockFullDay(){
   const dates = adminSelectedDates.length ? adminSelectedDates : [adminCalDate];
 
   if(!dates.length || !dates[0]){
@@ -2015,23 +2015,20 @@ async function blockFullDay(){
   if(!confirmUnlock) return;
 
   try{
-    for(const ds of dates){
+    const response = await fetch(SHEETS_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        action: 'unlockFullDayBatch',
+        profissional: adminCalProf,
+        datas: dates.join(',')
+      })
+    });
 
-      const matches = adminBlocksFromSheet.filter(b =>
-        b.profissional === adminCalProf &&
-        b.data === ds &&
-        String(b.estado || '').toUpperCase() !== 'INATIVO'
-      );
-
-      if(!matches.length) continue;
-
-      const horas = matches.map(b => b.hora);
-      const ids = matches
-        .filter(b => b.id >= 2)
-        .map(b => b.id);
-
-      await unlockBlockOnSheet(adminCalProf, ds, horas, ids);
-    }
+    const text = await response.text();
+    console.log('RESULTADO UNLOCK FULL DAY BATCH:', text);
 
     adminSelectedSlots = [];
     adminBlocksFromSheet = await loadBlocksFromSheet();
