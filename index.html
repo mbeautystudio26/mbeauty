@@ -1366,10 +1366,16 @@ async function unlockBlockOnSheet(profissional, data, horas, rowIds) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return null;
 
   try {
-    console.log('A ENVIAR DESBLOQUEIO V2:', profissional, data, horas, rowIds);
+    console.log('A ENVIAR DESBLOQUEIO V2:', profissional, data, horas);
 
-    for (const id of rowIds) {
-      const url = SHEETS_URL + '?action=cancelBlockV2&id=' + encodeURIComponent(id);
+    for (const hora of horas) {
+      const url =
+        SHEETS_URL +
+        '?action=cancelBlockSlotV2' +
+        '&profissional=' + encodeURIComponent(profissional) +
+        '&data=' + encodeURIComponent(data) +
+        '&hora=' + encodeURIComponent(hora);
+
       const res = await fetch(url);
       const resultText = await res.text();
       console.log('RESPOSTA DESBLOQUEIO V2:', resultText);
