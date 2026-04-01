@@ -1338,6 +1338,7 @@ async function saveBlockToSheet(profissional, data, hora) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
 
   try {
+    console.log('ENTREI NA saveBlockToSheet V2', profissional, data, hora);
     const res = await fetch(SHEETS_URL, {
       method: "POST",
       headers: {
@@ -1361,34 +1362,32 @@ async function saveBlockToSheet(profissional, data, hora) {
   }
 }
 
- async function unlockBlockOnSheet(profissional, data, horas, rowIds) {
+async function unlockBlockOnSheet(profissional, data, horas, rowIds) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return null;
 
   try {
-    console.log('A ENVIAR DESBLOQUEIO:', profissional, data, horas, rowIds);
+    console.log('A ENVIAR DESBLOQUEIO V2:', profissional, data, horas, rowIds);
 
-    const res = await fetch(SHEETS_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: new URLSearchParams({
-        action: 'unlockBlock',
-        profissional: profissional,
-        data: data,
-        horas: Array.isArray(horas) ? horas.join(',') : horas,
-        ids: Array.isArray(rowIds) ? rowIds.join(',') : rowIds
-      })
-    });
+    for (const id of rowIds) {
+      const res = await fetch(SHEETS_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+          action: 'cancelBlockV2',
+          id: id
+        })
+      });
 
-    console.log('STATUS DESBLOQUEIO:', res.status);
+      const resultText = await res.text();
+      console.log("RESPOSTA DESBLOQUEIO V2:", resultText);
+    }
 
-    const resultText = await res.text();
-    console.log("RESPOSTA DESBLOQUEIO:", resultText);
+    return { ok: true };
 
-    return resultText;
   } catch (e) {
-    console.warn('Sheet unlock error:', e);
+    console.warn('Sheet unblock error:', e);
     return null;
   }
 }
@@ -1894,10 +1893,15 @@ function getAdminBookingsForDate(prof, date){
   );
 }
 
-function getAdminBlocksForDate(prof, date){
+function getAdminBlocksForDate(prof, date) {
   return adminBlocksFromSheet
-    .filter(b => b.profissional === prof && b.data === date && String(b.estado || '').toUpperCase() !== 'INATIVO')
-    .map(b => b.hora);
+    .filter(b =>
+      b.profissional === prof &&
+      b.data === date &&
+      String(b.estado || '').toLowerCase() === 'ativo'
+    )
+    .map(b => b.hora)
+    .filter(Boolean);
 }
 
 function selectAdminCalDate(ds, event){
@@ -1928,8 +1932,9 @@ function selectAdminCalDate(ds, event){
 }
 
 function renderAdminBlockSlots(ds){
-  const blocked=getAdminBlocksForDate(adminCalProf,ds);
-  // Also show existing bookings for this prof on this day
+  const blocked = getAdminBlocksForDate(adminCalProf, ds);
+const blockedSet = new Set(blocked);
+   // Also show existing bookings for this prof on this day
   const bookedSlots=new Set();
   const savedBookings=JSON.parse(localStorage.getItem('mbeauty_bookings')||'[]')
     .filter(b=>b.date===ds&&b.status!=='cancelled'&&b.professional===adminCalProf);
@@ -1937,7 +1942,7 @@ function renderAdminBlockSlots(ds){
   const canEdit = canEditAdminCalendar();
   
   const html = ALL_SLOTS.map(t => {
-  const isBlocked = blocked.includes(t);
+  const isBlocked = blockedSet.has(t);
   const isBooked = bookedSlots.has(t);
   const isSelected = adminSelectedSlots.includes(t);
 
@@ -2131,18 +2136,22 @@ async function saveAdminBlocks(){
     });
   });
 
- await fetch(SHEETS_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded"
-  },
-  body: new URLSearchParams({
-    action: 'saveBlock',
-    profissional: adminCalProf,
-    data: adminCalDate,
-    horas: slotsToSave.join(',')
-  })
-});
+ for (const hora of slotsToSave) {
+  await fetch(SHEETS_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      action: 'saveHourV2',
+      profissional: adminCalProf,
+      data: adminCalDate,
+      horaInicio: hora,
+      horaFim: somar30Minutos(hora),
+      motivo: 'Bloqueio admin'
+    })
+  });
+}
 
   localStorage.setItem(
     getAdminBlockKey(adminCalProf, adminCalDate),
