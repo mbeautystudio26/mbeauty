@@ -2189,24 +2189,16 @@ async function unlockSelectedAdminBlocks(){
     return;
   }
 
+  const result = await unlockBlockOnSheet(
+    adminCalProf,
+    adminCalDate,
+    horas,
+    []
+  );
 
-const result = await unlockBlockOnSheet(
-  adminCalProf,
-  adminCalDate,
-  horas,
-  []
-);
+  console.log('RESULTADO DESBLOQUEIO:', result);
 
-console.log('RESULTADO DESBLOQUEIO:', result);
-
-
-  adminSelectedSlots = [];
-
-adminBlocksFromSheet = await loadBlocksFromSheet();
-renderAdminBlockSlots(adminCalDate);
-renderAdminCal();
-
-alert('✓ Horários desbloqueados!');
+  blocked = blocked.filter(h => !horas.includes(h));
 
   localStorage.setItem(
     getAdminBlockKey(adminCalProf, adminCalDate),
@@ -2214,6 +2206,8 @@ alert('✓ Horários desbloqueados!');
   );
 
   adminSelectedSlots = [];
+
+  adminBlocksFromSheet = await loadBlocksFromSheet();
   renderAdminBlockSlots(adminCalDate);
   renderAdminCal();
 
