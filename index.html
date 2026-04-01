@@ -1907,15 +1907,7 @@ function getAdminBlocksForDate(prof, date) {
     .map(b => b.hora)
     .filter(Boolean);
 }
-  return adminBlocksFromSheet
-    .filter(b =>
-      b.profissional === prof &&
-      b.data === date &&
-      String(b.estado || '').toLowerCase() === 'ativo'
-    )
-    .map(b => b.hora)
-    .filter(Boolean);
-}
+    
 
 function selectAdminCalDate(ds, event){
   const isCtrl = event && (event.ctrlKey || event.metaKey);
@@ -2308,12 +2300,12 @@ document.addEventListener('DOMContentLoaded',function(){
     bookings = Array.from(mergedMap.values());
     localStorage.setItem('mbeauty_bookings', JSON.stringify(bookings));
 
-    renderCalendar();
+        renderCalendar();
     if(selectedDate){
       renderSlots(selectedDate);
-     });
-});
- 
+    }
+  });
+
   var brand=document.getElementById('navBrand');
   if(brand){
     brand.addEventListener('click',function(){
