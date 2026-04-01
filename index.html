@@ -2155,13 +2155,13 @@ async function saveAdminBlocks(){
     JSON.stringify(blocked)
   );
 
-  adminSelectedSlots = [];
-  renderAdminBlockSlots(adminCalDate);
-  renderAdminCal();
+ adminSelectedSlots = [];
 
-  adminBlocksFromSheet = await loadBlocksFromSheet();
+adminBlocksFromSheet = await loadBlocksFromSheet();
+renderAdminBlockSlots(adminCalDate);
+renderAdminCal();
 
-  alert('✓ Horários bloqueados!');
+alert('✓ Horários bloqueados!');
 }
 
 async function unlockSelectedAdminBlocks(){
@@ -2265,9 +2265,11 @@ let _adminSeq=[];
 let _touchSeq=[];
 document.addEventListener('DOMContentLoaded',function(){
    loadBookingsFromSheet().then(sheetData => {
-   loadBlocksFromSheet().then(blocks => {
-  adminBlocksFromSheet = blocks;
-  }); 
+  loadBlocksFromSheet().then(blocks => {
+    adminBlocksFromSheet = blocks;
+    renderAdminCal();
+    if (adminCalDate) renderAdminBlockSlots(adminCalDate);
+  });
     
     const localData = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
 
