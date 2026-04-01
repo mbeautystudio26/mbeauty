@@ -1304,7 +1304,7 @@ async function loadBlocksFromSheet() {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return [];
 
   try {
-    const r = await fetch(SHEETS_URL + '?action=getBlocks');
+    const r = await fetch(SHEETS_URL + '?action=getBlocksV2');
     const data = await r.json();
     console.log('BLOCKS V2 RAW:', data); 
    
@@ -1312,10 +1312,10 @@ async function loadBlocksFromSheet() {
 
     return data.map(row => ({
   id: row.id,
-  profissional: row.Profissional || row.profissional || '',
-  data: new Date(row.Data || row.data || '').toLocaleDateString('en-CA'),
-  hora: formatSheetTime(row.Hora || row.hora || ''),
-  estado: row.Estado || row.estado || ''
+  profissional: row.profissional || '',
+  data: row.data_inicio,
+  hora: row.hora_inicio || '',
+  estado: row.estado || ''
 }));
   } catch (e) {
     console.warn('Sheet blocks load error:', e);
