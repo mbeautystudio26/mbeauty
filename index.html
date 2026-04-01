@@ -2197,13 +2197,13 @@ async function unlockSelectedAdminBlocks(){
 );
 
 matches.forEach(match => {
-    if (match.id >= 2) {
-      pendingUnlocks.push({
-        hora: t,
-        rowId: match.id
-      });
-    }
-  });
+  if (match.id) {
+    pendingUnlocks.push({
+      hora: t,
+      rowId: String(match.id)
+    });
+  }
+});
 }
 
 
@@ -2225,14 +2225,13 @@ const result = await unlockBlockOnSheet(
 console.log('RESULTADO DESBLOQUEIO:', result);
 
 
-  adminBlocksFromSheet = adminBlocksFromSheet.filter(b =>
-    !pendingUnlocks.some(item =>
-      b.profissional === adminCalProf &&
-      b.data === adminCalDate &&
-      b.hora === item.hora &&
-      b.id === item.rowId
-    )
-  );
+  adminSelectedSlots = [];
+
+adminBlocksFromSheet = await loadBlocksFromSheet();
+renderAdminBlockSlots(adminCalDate);
+renderAdminCal();
+
+alert('✓ Horários desbloqueados!');
 
   localStorage.setItem(
     getAdminBlockKey(adminCalProf, adminCalDate),
