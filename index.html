@@ -2190,36 +2190,19 @@ async function unlockSelectedAdminBlocks(){
     const i = blocked.indexOf(t);
     if (i > -1) blocked.splice(i, 1);
 
-    const matches = adminBlocksFromSheet.filter(b =>
-  b.profissional === adminCalProf &&
-  b.data === adminCalDate &&
-  b.hora === t
-);
+    const horas = [...adminSelectedSlots];
 
-matches.forEach(match => {
-  if (match.id) {
-    pendingUnlocks.push({
-      hora: t,
-      rowId: String(match.id)
-    });
-  }
-});
+if (!horas.length) {
+  alert('Não foi possível encontrar os bloqueios selecionados.');
+  return;
 }
 
-
-  if(!pendingUnlocks.length){
-    alert('Não foi possível encontrar os bloqueios selecionados.');
-    return;
-  }
-
-  const horas = pendingUnlocks.map(item => item.hora);
-const ids = pendingUnlocks.map(item => item.rowId);
 
 const result = await unlockBlockOnSheet(
   adminCalProf,
   adminCalDate,
   horas,
-  ids
+  []
 );
 
 console.log('RESULTADO DESBLOQUEIO:', result);
