@@ -2165,7 +2165,6 @@ async function saveAdminBlocks(){
 }
 
 async function unlockSelectedAdminBlocks(){
-
   if(!adminCalDate){
     alert('Selecione primeiro um dia.');
     return;
@@ -2183,18 +2182,36 @@ async function unlockSelectedAdminBlocks(){
   if(!confirmUnlock) return;
 
   let blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
+  const horas = [...adminSelectedSlots];
 
-  const pendingUnlocks = [];
+  if(!horas.length){
+    alert('Não foi possível encontrar os bloqueios selecionados.');
+    return;
+  }
 
-  for (const t of adminSelectedSlots) {
-    const i = blocked.indexOf(t);
-    if (i > -1) blocked.splice(i, 1);
+  const result = await unlockBlockOnSheet(
+    adminCalProf,
+    adminCalDate,
+    horas,
+    []
+  );
 
-    const horas = [...adminSelectedSlots];
+  console.log('RESULTADO DESBLOQUEIO:', result);
 
-if (!horas.length) {
-  alert('Não foi possível encontrar os bloqueios selecionados.');
-  return;
+  blocked = blocked.filter(h => !horas.includes(h));
+
+  localStorage.setItem(
+    getAdminBlockKey(adminCalProf, adminCalDate),
+    JSON.stringify(blocked)
+  );
+
+  adminSelectedSlots = [];
+
+  adminBlocksFromSheet = await loadBlocksFromSheet();
+  renderAdminBlockSlots(adminCalDate);
+  renderAdminCal();
+
+  alert('✓ Horários desbloqueados!');
 }
 
 
