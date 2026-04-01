@@ -1343,20 +1343,19 @@ async function saveBlockToSheet(profissional, data, hora) {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
-            
-         body: new URLSearchParams({
-  action: 'saveHourV2',
-  profissional: profissional,
-  data: data,
-  horaInicio: hora,
-  horaFim: somar30Minutos(hora),
-  motivo: 'Bloqueio admin'
-})
-         });
-
+      body: new URLSearchParams({
+        action: 'saveHourV2',
+        profissional: profissional,
+        data: data,
+        horaInicio: hora,
+        horaFim: somar30Minutos(hora),
+        motivo: 'Bloqueio admin'
+      })
+    });
 
     const resultText = await res.text();
     console.log("RESPOSTA BLOQUEIO:", resultText);
+
   } catch (e) {
     console.warn('Sheet block save error:', e);
   }
