@@ -1369,25 +1369,16 @@ async function unlockBlockOnSheet(profissional, data, horas, rowIds) {
     console.log('A ENVIAR DESBLOQUEIO V2:', profissional, data, horas, rowIds);
 
     for (const id of rowIds) {
-      const res = await fetch(SHEETS_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({
-          action: 'cancelBlockV2',
-          id: id
-        })
-      });
-
+      const url = SHEETS_URL + '?action=cancelBlockV2&id=' + encodeURIComponent(id);
+      const res = await fetch(url);
       const resultText = await res.text();
-      console.log("RESPOSTA DESBLOQUEIO V2:", resultText);
+      console.log('RESPOSTA DESBLOQUEIO V2:', resultText);
     }
 
     return { ok: true };
 
   } catch (e) {
-    console.warn('Sheet unblock error:', e);
+    console.warn('Sheet unlock error:', e);
     return null;
   }
 }
