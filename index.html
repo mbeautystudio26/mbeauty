@@ -2297,7 +2297,7 @@ document.addEventListener('DOMContentLoaded',function(){
    loadBookingsFromSheet().then(sheetData => {
     renderAdminCal();
     if (adminCalDate) renderAdminBlockSlots(adminCalDate);
-    
+      });
     const localData = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
 
     const mergedMap = new Map();
