@@ -1735,16 +1735,25 @@ async function handleAdminLogin(){
 
  
 
-function openAdminPanel(){
-  document.getElementById('adminAvatarEl').textContent=selectedProfile[0];
-  document.getElementById('adminNameEl').textContent=selectedProfile;
-  document.getElementById('adminWelcomeName').textContent=selectedProfile;
+async function openAdminPanel(){
+  document.getElementById('adminAvatarEl').textContent = selectedProfile[0];
+  document.getElementById('adminNameEl').textContent = selectedProfile;
+  document.getElementById('adminWelcomeName').textContent = selectedProfile;
   document.getElementById('adminPanel').classList.add('show');
-  document.body.style.overflow='hidden';
-  renderAdminBookings();
-  adminCalProf=selectedProfile;adminCalMonth=new Date().getMonth();adminCalYear=new Date().getFullYear();adminCalDate=null;renderAdminCal();
-  document.getElementById('adminCalTabBete').classList.toggle('active',selectedProfile==='Bete');
-  document.getElementById('adminCalTabMarta').classList.toggle('active',selectedProfile==='Marta');
+  document.body.style.overflow = 'hidden';
+
+  adminCalProf = selectedProfile;
+  adminCalMonth = new Date().getMonth();
+  adminCalYear = new Date().getFullYear();
+  adminCalDate = null;
+
+  adminBlocksFromSheet = await loadBlocksFromSheet();
+
+  await renderAdminBookings();
+  renderAdminCal();
+
+  document.getElementById('adminCalTabBete').classList.toggle('active', selectedProfile === 'Bete');
+  document.getElementById('adminCalTabMarta').classList.toggle('active', selectedProfile === 'Marta');
 }
 function logoutAdmin(){document.getElementById('adminPanel').classList.remove('show');document.body.style.overflow='';}
 async function renderAdminBookings(){
@@ -1891,6 +1900,13 @@ function getAdminBookingsForDate(prof, date){
 }
 
 function getAdminBlocksForDate(prof, date) {
+  if (!Array.isArray(adminBlocksFromSheet)) return [];
+
+  return adminBlocksFromSheet
+    .filter(b => b.profissional === prof && b.data === date && String(b.estado || '').toLowerCase() === 'ativo')
+    .map(b => b.hora)
+    .filter(Boolean);
+}
   return adminBlocksFromSheet
     .filter(b =>
       b.profissional === prof &&
@@ -2215,8 +2231,22 @@ async function unlockSelectedAdminBlocks(){
 }
 
 
-renderCalendar();
-if(document.getElementById("adminCalWrap")){}// admin cal init on panel open
+async function initApp(){
+  try{
+    adminBlocksFromSheet = await loadBlocksFromSheet();
+  }catch(e){
+    console.warn('Erro ao carregar bloqueios no arranque:', e);
+    adminBlocksFromSheet = [];
+  }
+
+  renderCalendar();
+
+  if(selectedDate && selectedProfessional){
+    renderSlots(selectedDate);
+  }
+}
+
+initApp();
 
 // ===== PRICELIST PANEL =====
 function openPricelist(){
@@ -2265,11 +2295,8 @@ let _adminSeq=[];
 let _touchSeq=[];
 document.addEventListener('DOMContentLoaded',function(){
    loadBookingsFromSheet().then(sheetData => {
-  loadBlocksFromSheet().then(blocks => {
-    adminBlocksFromSheet = blocks;
     renderAdminCal();
     if (adminCalDate) renderAdminBlockSlots(adminCalDate);
-  });
     
     const localData = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
 
