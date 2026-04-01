@@ -2295,9 +2295,7 @@ let _adminSeq=[];
 let _touchSeq=[];
 document.addEventListener('DOMContentLoaded',function(){
    loadBookingsFromSheet().then(sheetData => {
-    renderAdminCal();
-    if (adminCalDate) renderAdminBlockSlots(adminCalDate);
-      });
+    
     const localData = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
 
     const mergedMap = new Map();
@@ -2313,8 +2311,8 @@ document.addEventListener('DOMContentLoaded',function(){
     renderCalendar();
     if(selectedDate){
       renderSlots(selectedDate);
-    }
-  });
+     });
+});
  
   var brand=document.getElementById('navBrand');
   if(brand){
