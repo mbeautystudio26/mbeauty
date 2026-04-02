@@ -1304,18 +1304,18 @@ async function loadBlocksFromSheet() {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return [];
 
   try {
-    const r = await fetch(SHEETS_URL + '?action=getBlocksV2');
+   const r = await fetch(SHEETS_URL + '?action=getBlocks');
     const data = await r.json();
     console.log('BLOCKS V2 RAW:', data); 
    
     if (!Array.isArray(data)) return [];
 
-    return data.map(row => ({
+   return data.map(row => ({
   id: row.id,
-  profissional: row.profissional || '',
-  data: row.data_inicio,
-  hora: row.hora_inicio || '',
-  estado: row.estado || ''
+  profissional: row.Profissional || '',
+ data: String(row.Data).trim(),
+  hora: String(row.Hora).trim(),
+  estado: row.Estado || ''
 }));
   } catch (e) {
     console.warn('Sheet blocks load error:', e);
@@ -1345,12 +1345,10 @@ async function saveBlockToSheet(profissional, data, hora) {
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: new URLSearchParams({
-        action: 'saveHourV2',
+        action: 'saveBlock',
         profissional: profissional,
         data: data,
-        horaInicio: hora,
-        horaFim: somar30Minutos(hora),
-        motivo: 'Bloqueio admin'
+        hora: hora
       })
     });
 
@@ -1367,19 +1365,24 @@ async function unlockBlockOnSheet(profissional, data, horas, rowIds) {
 
   try {
     console.log('A ENVIAR DESBLOQUEIO V2:', profissional, data, horas);
+    console.log('DEBUG HORAS STRING:', horas.join(':'));
+    
+    const res = await fetch(SHEETS_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
+  body: new URLSearchParams({
+    action: 'unlockBlock',
+    profissional: profissional,
+    data: data,
+   horas: horas.join(';')
+  })
+});
 
-    for (const hora of horas) {
-      const url =
-        SHEETS_URL +
-        '?action=cancelBlockSlotV2' +
-        '&profissional=' + encodeURIComponent(profissional) +
-        '&data=' + encodeURIComponent(data) +
-        '&hora=' + encodeURIComponent(hora);
 
-      const res = await fetch(url);
-      const resultText = await res.text();
-      console.log('RESPOSTA DESBLOQUEIO V2:', resultText);
-    }
+const resultText = await res.text();
+console.log('RESPOSTA DESBLOQUEIO:', resultText);
 
     return { ok: true };
 
@@ -1735,7 +1738,7 @@ async function handleAdminLogin(){
 
  
 
-async function openAdminPanel(){
+ async function openAdminPanel(){
   document.getElementById('adminAvatarEl').textContent = selectedProfile[0];
   document.getElementById('adminNameEl').textContent = selectedProfile;
   document.getElementById('adminWelcomeName').textContent = selectedProfile;
@@ -1749,7 +1752,7 @@ async function openAdminPanel(){
 
   adminBlocksFromSheet = await loadBlocksFromSheet();
 
-  await renderAdminBookings();
+  renderAdminBookings();
   renderAdminCal();
 
   document.getElementById('adminCalTabBete').classList.toggle('active', selectedProfile === 'Bete');
@@ -1900,14 +1903,15 @@ function getAdminBookingsForDate(prof, date){
 }
 
 function getAdminBlocksForDate(prof, date) {
-  if (!Array.isArray(adminBlocksFromSheet)) return [];
-
   return adminBlocksFromSheet
-    .filter(b => b.profissional === prof && b.data === date && String(b.estado || '').toLowerCase() === 'ativo')
-    .map(b => b.hora)
+    .filter(b =>
+  b.profissional === prof &&
+  String(b.data).trim() === String(date).trim() &&
+  String(b.estado || '').toLowerCase() === 'ativo'
+)
+    .map(b => String(b.hora || '').trim().slice(0, 5))
     .filter(Boolean);
 }
-    
 
 function selectAdminCalDate(ds, event){
   const isCtrl = event && (event.ctrlKey || event.metaKey);
@@ -1938,7 +1942,13 @@ function selectAdminCalDate(ds, event){
 
 function renderAdminBlockSlots(ds){
   const blocked = getAdminBlocksForDate(adminCalProf, ds);
-const blockedSet = new Set(blocked);
+ console.log('ADMIN BLOCKED DEBUG:', {
+  prof: adminCalProf,
+  date: ds,
+  blocked: blocked
+});
+  
+  const blockedSet = new Set(blocked);
    // Also show existing bookings for this prof on this day
   const bookedSlots=new Set();
   const savedBookings=JSON.parse(localStorage.getItem('mbeauty_bookings')||'[]')
@@ -1956,7 +1966,18 @@ if(isBlocked) cls += ' blocked';
 if(isBooked) cls += ' unavailable booked-gold';
 if(isSelected) cls += ' selected';
 if(!canEdit) cls += ' read-only';
-  
+
+if (t === '10:00') {
+  console.log('SLOT DEBUG 10:00:', {
+    t,
+    isBlocked,
+    isBooked,
+    isSelected,
+    cls
+  });
+}
+
+
   const tooltip = isBooked ? ' title="Horário com marcação"' : '';
 
   return '<div class="' + cls + '"' +
@@ -2141,35 +2162,31 @@ async function saveAdminBlocks(){
     });
   });
 
- for (const hora of slotsToSave) {
-  await fetch(SHEETS_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: new URLSearchParams({
-      action: 'saveHourV2',
-      profissional: adminCalProf,
-      data: adminCalDate,
-      horaInicio: hora,
-      horaFim: somar30Minutos(hora),
-      motivo: 'Bloqueio admin'
-    })
-  });
-}
+ await fetch(SHEETS_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
+  body: new URLSearchParams({
+    action: 'saveBlock',
+    profissional: adminCalProf,
+    data: adminCalDate,
+    horas: slotsToSave.join(';')
+  })
+});
 
   localStorage.setItem(
     getAdminBlockKey(adminCalProf, adminCalDate),
     JSON.stringify(blocked)
   );
 
- adminSelectedSlots = [];
+  adminSelectedSlots = [];
+  renderAdminBlockSlots(adminCalDate);
+  renderAdminCal();
 
-adminBlocksFromSheet = await loadBlocksFromSheet();
-renderAdminBlockSlots(adminCalDate);
-renderAdminCal();
+  alert('✓ Horários bloqueados!');
 
-alert('✓ Horários bloqueados!');
+ // reload só quando reabrir admin
 }
 
 async function unlockSelectedAdminBlocks(){
@@ -2191,54 +2208,36 @@ async function unlockSelectedAdminBlocks(){
 
   let blocked = getAdminBlocksForDate(adminCalProf, adminCalDate);
   const horas = [...adminSelectedSlots];
+const rowIds = [];
 
-  if(!horas.length){
-    alert('Não foi possível encontrar os bloqueios selecionados.');
-    return;
-  }
 
-  const result = await unlockBlockOnSheet(
-    adminCalProf,
-    adminCalDate,
-    horas,
-    []
-  );
+const result = await unlockBlockOnSheet(
+  adminCalProf,
+  adminCalDate,
+  horas,
+  rowIds
+);
 
-  console.log('RESULTADO DESBLOQUEIO:', result);
+console.log('RESULTADO DESBLOQUEIO:', result);
 
-  blocked = blocked.filter(h => !horas.includes(h));
+
+  adminSelectedSlots = [];
+
+adminBlocksFromSheet = await loadBlocksFromSheet();
+renderAdminBlockSlots(adminCalDate);
+renderAdminCal();
+
+alert('✓ Horários desbloqueados!');
 
   localStorage.setItem(
     getAdminBlockKey(adminCalProf, adminCalDate),
     JSON.stringify(blocked)
   );
-
-  adminSelectedSlots = [];
-
-  adminBlocksFromSheet = await loadBlocksFromSheet();
-  renderAdminBlockSlots(adminCalDate);
-  renderAdminCal();
-
-  alert('✓ Horários desbloqueados!');
 }
 
 
-async function initApp(){
-  try{
-    adminBlocksFromSheet = await loadBlocksFromSheet();
-  }catch(e){
-    console.warn('Erro ao carregar bloqueios no arranque:', e);
-    adminBlocksFromSheet = [];
-  }
-
-  renderCalendar();
-
-  if(selectedDate && selectedProfessional){
-    renderSlots(selectedDate);
-  }
-}
-
-initApp();
+renderCalendar();
+if(document.getElementById("adminCalWrap")){}// admin cal init on panel open
 
 // ===== PRICELIST PANEL =====
 function openPricelist(){
@@ -2287,6 +2286,9 @@ let _adminSeq=[];
 let _touchSeq=[];
 document.addEventListener('DOMContentLoaded',function(){
    loadBookingsFromSheet().then(sheetData => {
+   loadBlocksFromSheet().then(blocks => {
+  adminBlocksFromSheet = blocks;
+  }); 
     
     const localData = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
 
@@ -2300,12 +2302,12 @@ document.addEventListener('DOMContentLoaded',function(){
     bookings = Array.from(mergedMap.values());
     localStorage.setItem('mbeauty_bookings', JSON.stringify(bookings));
 
-        renderCalendar();
+    renderCalendar();
     if(selectedDate){
       renderSlots(selectedDate);
     }
   });
-
+ 
   var brand=document.getElementById('navBrand');
   if(brand){
     brand.addEventListener('click',function(){
