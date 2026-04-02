@@ -1755,8 +1755,8 @@ async function handleAdminLogin(){
   renderAdminBookings();
   renderAdminCal();
 
-  document.getElementById('adminCalTabBete').classList.toggle('active', selectedProfile === 'Bete');
-  document.getElementById('adminCalTabMarta').classList.toggle('active', selectedProfile === 'Marta');
+ document.getElementById('adminCalTabBete').style.display = selectedProfile === 'Bete' ? 'inline-block' : 'none';
+document.getElementById('adminCalTabMarta').style.display = selectedProfile === 'Marta' ? 'inline-block' : 'none';
 }
 function logoutAdmin(){document.getElementById('adminPanel').classList.remove('show');document.body.style.overflow='';}
 async function renderAdminBookings(){
@@ -1767,7 +1767,7 @@ async function renderAdminBookings(){
   // Load from Google Sheet
   const sheetData = await loadBookingsFromSheet();
   if(sheetData.length > 0){
-    bookings = sheetData;
+    bookings = sheetData.filter(b => b.profissional === selectedProfile);
     saveBookingsLocal(); // sync local cache
   } else {
     // Fallback to localStorage if Sheet not configured yet
