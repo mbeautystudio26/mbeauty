@@ -942,6 +942,23 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
       <div class="astat"><div class="astat-num" id="statConfirmed">0</div><div class="astat-label">Confirmadas</div></div>
       <div class="astat"><div class="astat-num" id="statToday">0</div><div class="astat-label">Hoje</div></div>
     </div>
+    <div class="admin-finance">
+  <div class="astat">
+    <div class="astat-num" id="statTotalValue">0,00 €</div>
+    <div class="astat-label">Total €</div>
+  </div>
+
+  <div class="astat">
+    <div class="astat-num" id="statReceivedValue">0,00 €</div>
+    <div class="astat-label">Recebido €</div>
+  </div>
+
+  <div class="astat">
+    <div class="astat-num" id="statPendingValue">0,00 €</div>
+    <div class="astat-label">Por receber €</div>
+  </div>
+</div>
+                    
     <div class="bookings-section">
       <div class="bookings-header">
         <h3>Marcações Recebidas</h3>
@@ -1106,15 +1123,15 @@ const serviceDurations = {
   '1ª Aplicação c/ Extensão': 180,
   '1ª Aplicação s/ Extensão': 120,
   'Manutenção de Gel': 120,
-  'Verniz Gel': 75,
+  'Verniz Gel': 90,
   'Verniz Gel Nivelado': 90,
   'Manicure': 30,
-  'Pedicure': 60,
-  'Pedicure c/ Verniz Gel': 90,
+  'Pedicure': 45,
+  'Pedicure c/ Verniz Gel': 60,
   'Verniz Gel s/ Pedicure': 45,
   'Extensão de Pestanas — Volume Egípcio': 120,
   'Extensão de Pestanas — Volume Brasileiro': 120,
-  'Manutenção de Pestanas': 120,
+  'Manutenção de Pestanas': 90,
   'Depilação a Laser': 60,
   'Depilação a Cera — Sobrancelha': 15,
   'Depilação a Cera — Buço': 20,
@@ -1137,6 +1154,49 @@ const serviceDurations = {
   'Microagulhamento Facial': 90,
   'PDRN — DNA Salmão': 60
 };
+
+// ===== PREÇOS DOS SERVIÇOS (€) =====
+const servicePrices = {
+  '1ª Aplicação c/ Extensão': 28,
+  '1ª Aplicação s/ Extensão': 25,
+  'Manutenção de Gel': 22,
+  'Verniz Gel': 16,
+  'Verniz Gel Nivelado': 18,
+  'Manicure': 8,
+  'Pedicure': 14,
+  'Pedicure c/ Verniz Gel': 24,
+  'Verniz Gel s/ Pedicure': 12,
+  'Extensão de Pestanas - Volume Egípcio': 40,
+  'Extensão de Pestanas - Volume Brasileiro': 40,
+  'Manutenção de Pestanas': 35,
+  'Lash Lifting': 40,
+  'Lash Lifting + Tinta': 45,
+  'Design de Sobrancelhas': 12,
+  'Design + Henna': 25,
+  'Brow Lamination': 40,
+  'Brow Lamination + Henna': 60,
+  'Tratamento Grow Brows': 75,
+  'Depilação a Laser': 0,
+  'Depilação a Cera - Sobrancelha': 5,
+  'Depilação a Cera - Buço': 4,
+  'Depilação a Cera - Bucimento': 0,
+  'Depilação a Cera - Axilas': 10,
+  'Depilação a Cera - Braços': 10,
+  'Depilação a Cera - Meia Perna': 12,
+  'Depilação a Cera - Perna Completa': 18,
+  'Depilação a Cera - Perna + Virilha Bikini': 22,
+  'Depilação a Cera - Perna + Virilha Completa': 26,
+  'Hydra Lips Care': 45,
+  'BBGlow Skin': 70,
+  'Microagulhamento Facial': 80,
+  'PDRN — DNA Salmão': 120
+};
+
+
+
+
+
+
 function getDuration(svc){ return serviceDurations[svc] || 60; }
 function fmtDuration(min){ if(min<60)return min+'min'; const h=Math.floor(min/60),m=min%60; return h+'h'+(m?m+'min':''); }
 
@@ -1766,8 +1826,10 @@ async function renderAdminBookings(){
 
   // Load from Google Sheet
   const sheetData = await loadBookingsFromSheet();
+  console.log('DEBUG BOOKINGS SHEETDATA:', sheetData);
+   console.log('DEBUG PRIMEIRO BOOKING:', sheetData && sheetData[0]);
   if(sheetData.length > 0){
-    bookings = sheetData.filter(b => b.profissional === selectedProfile);
+    bookings = sheetData.filter(b => b.professional === selectedProfile);
     saveBookingsLocal(); // sync local cache
   } else {
     // Fallback to localStorage if Sheet not configured yet
@@ -1775,10 +1837,23 @@ async function renderAdminBookings(){
   }
 
   const todayStr=new Date().toISOString().split('T')[0];
-  document.getElementById('statTotal').textContent=bookings.length;
-  document.getElementById('statPending').textContent=bookings.filter(b=>b.status==='pending').length;
-  document.getElementById('statConfirmed').textContent=bookings.filter(b=>b.status==='confirmed').length;
-  document.getElementById('statToday').textContent=bookings.filter(b=>b.date===todayStr).length;
+  const myBookings = bookings.filter(b => b.professional === selectedProfile);
+ 
+  const totalValue = myBookings.reduce((sum, b) => sum + Number(servicePrices[b.service] || 0), 0);
+   console.log('DEBUG TOTAL VALUE:', totalValue);
+  console.log('DEBUG PREÇOS:', myBookings.map(b => ({ service: b.service, price: servicePrices[b.service] })));
+  const receivedValue = myBookings.reduce((sum, b) => sum + (Number(b.receivedValue || 0)), 0);
+ const pendingValue = totalValue - receivedValue;
+
+document.getElementById('statTotalValue').textContent = totalValue.toFixed(2).replace('.', ',') + ' €';
+document.getElementById('statReceivedValue').textContent = receivedValue.toFixed(2).replace('.', ',') + ' €';
+document.getElementById('statPendingValue').textContent = pendingValue.toFixed(2).replace('.', ',') + ' €';
+   
+  document.getElementById('statTotal').textContent = myBookings.length;
+  document.getElementById('statPending').textContent = myBookings.filter(b=>b.status==='pending').length;
+   console.log('DEBUG STATUSS:', myBookings.map(b => b.status));
+  document.getElementById('statConfirmed').textContent = myBookings.filter(b=>b.status==='confirmed').length;
+  document.getElementById('statToday').textContent = myBookings.filter(b=>b.date===todayStr).length;
   document.getElementById('bookingsCount').textContent=bookings.length+' marcações';
   if(!bookings.length){document.getElementById('bookingsList').innerHTML='<div class="empty-bookings">Ainda não há marcações. Quando os clientes fizerem pedidos, aparecerão aqui. 🌸</div>';return;}
   const sorted=[...bookings].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
@@ -1786,7 +1861,9 @@ async function renderAdminBookings(){
     const sc=b.status==='confirmed'?'status-confirmed':b.status==='cancelled'?'status-cancelled':'status-pending';
     const sl=b.status==='confirmed'?'Confirmada':b.status==='cancelled'?'Cancelada':'Pendente';
     const profTag = b.professional ? `<span style="display:inline-block;padding:2px 8px;font-size:.62rem;letter-spacing:.1em;border-radius:2px;font-weight:500;background:${b.professional==='Bete'?'rgba(192,82,122,.15)':'rgba(201,168,76,.15)'};color:${b.professional==='Bete'?'var(--rose-deep)':'var(--gold-deep)'};margin-left:6px">${b.professional}</span>` : '';
-    return`<div class="booking-row"><div><div class="br-name">${b.name}${profTag}</div><div style="font-size:.7rem;color:var(--warm);margin-top:2px">${formatDate(b.date)} às ${b.time}h</div></div><div class="br-service">${b.service}</div><div class="br-contact">📱 ${b.phone}<br>✉ ${b.email}</div><div><span class="br-status ${sc}">${sl}</span></div><div style="display:flex;gap:4px;flex-wrap:wrap">${b.status==='pending'?`<button class="confirm-btn" onclick="updateStatus('${b.id}','confirmed')">✓ Confirmar</button>`:''} ${b.status!=='cancelled'?`<button class="cancel-btn" onclick="cancelBooking('${b.id}')">✕ Cancelar</button>`:''}</div></div>`;
+    const serviceValue = Number(servicePrices[b.service] || 0);
+   
+    return`<div class="booking-row"><div><div class="br-name">${b.name}${profTag}</div><div style="font-size:.7rem;color:var(--warm);margin-top:2px">${formatDate(b.date)} às ${b.time}h</div></div><div class="br-service">${b.service}</div><div class="br-contact">📱 ${b.phone}<br>✉ ${b.email}</div><div style="font-size:.78rem;font-weight:600;color:var(--gold-deep);min-width:70px;text-align:right;">${serviceValue.toFixed(2).replace('.', ',')} €</div><div><span class="br-status ${sc}">${sl}</span></div><div style="display:flex;gap:4px;flex-wrap:wrap">${b.status==='pending'?`<button class="confirm-btn" onclick="updateStatus('${b.id}','confirmed')">✓ Confirmar</button>`:''} ${b.status!=='cancelled'?`<button class="cancel-btn" onclick="cancelBooking('${b.id}')">✕ Cancelar</button>`:''}</div></div>`;
   }).join('');
 }
 async function updateStatus(id,status){
