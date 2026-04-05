@@ -1560,7 +1560,7 @@ if (!Array.isArray(data)) return [];
         ? 'cancelled'
         : 'pending',
       professional: row.Profissional || row.Professional || '',
-      finalPrice: Number(row.finalPrice || 0)
+      finalPrice: row.finalPrice === '' || row.finalPrice == null ? null : Number(row.finalPrice)
     };
   })
   .filter(b => 
