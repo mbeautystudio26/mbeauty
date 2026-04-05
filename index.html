@@ -1411,17 +1411,19 @@ async function saveBookingToSheet(bookingObj) {
     "Content-Type": "application/x-www-form-urlencoded"
   },
   body: new URLSearchParams({
-    action: 'save',
-    name: bookingObj.name,
-    telefone: bookingObj.phone,
-    email: bookingObj.email,
-    servico: bookingObj.service,
-    data: bookingObj.date,
-    hora: bookingObj.time,
-    duracao: bookingObj.duration,
-    notas: bookingObj.notes || '',
-    professional: bookingObj.professional,
-  })
+  action: 'save',
+  id: bookingObj.id,
+  name: bookingObj.name,
+  telefone: bookingObj.phone,
+  email: bookingObj.email,
+  servico: bookingObj.service,
+  data: bookingObj.date,
+  hora: bookingObj.time,
+  duracao: bookingObj.duration,
+  notas: bookingObj.notes || '',
+  professional: bookingObj.professional,
+  finalPrice: bookingObj.finalPrice ?? ''
+})
 });
 
 const resultText = await res.text();
