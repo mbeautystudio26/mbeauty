@@ -217,6 +217,66 @@ nav{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(253,247,249,
 .config-text p{font-size:.76rem;color:var(--warm);line-height:1.6;font-weight:300}
 .empty-bookings{text-align:center;padding:44px 22px;color:var(--warm);font-size:.83rem;font-weight:300}
 
+.price-editor-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:120px;
+}
+
+.price-editor-label{
+  font-size:.6rem;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--warm);
+}
+
+.price-editor-row{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.price-editor-input{
+  width:88px;
+  padding:7px 8px;
+  border:1px solid var(--border-gold);
+  background:var(--gold-pale);
+  color:var(--charcoal);
+  font-family:'Raleway',sans-serif;
+  font-size:.78rem;
+  outline:none;
+}
+
+.price-editor-input:focus{
+  border-color:var(--gold);
+  background:white;
+}
+
+.price-save-btn{
+  background:linear-gradient(135deg,var(--rose-deep),#9e3f62);
+  color:white;
+  border:none;
+  padding:7px 10px;
+  font-family:'Raleway',sans-serif;
+  font-size:.6rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all .25s;
+}
+
+.price-save-btn:hover{
+  box-shadow:0 4px 14px rgba(192,82,122,.25);
+}
+
+.price-base-note{
+  font-size:.62rem;
+  color:var(--warm);
+  line-height:1.3;
+}
+
+
 /* FOOTER */
 footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28px}
 .footer-inner{max-width:1200px;margin:0 auto}
@@ -961,12 +1021,25 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
                     
     <div class="bookings-section">
       <div class="bookings-header">
+        
         <h3>Marcações Recebidas</h3>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <span id="bookingsCount" style="font-size:.73rem;color:var(--warm)">0 marcações</span>
-          <button onclick="clearCancelledBookings()" style="background:transparent;border:1px solid rgba(192,82,122,.35);color:var(--warm);padding:5px 12px;font-family:'Raleway',sans-serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .3s;border-radius:2px" onmouseover="this.style.borderColor='var(--rose-deep)';this.style.color='var(--rose-deep)'" onmouseout="this.style.borderColor='rgba(192,82,122,.35)';this.style.color='var(--warm)'">🗑 Limpar Canceladas</button>
-        </div>
-      </div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+  <span id="bookingsCount" style="font-size:.73rem;color:var(--warm)">0 marcações</span>
+
+  <select id="monthFilter" style="padding:6px 10px;border:1px solid rgba(192,82,122,.35);background:white;color:var(--warm);font-family:'Raleway',sans-serif;font-size:.72rem;" onchange="handleMonthFilterChange()">
+    <option value="">Todos os meses</option>
+  </select>
+
+  <select id="weekFilter" style="padding:6px 10px;border:1px solid rgba(192,82,122,.35);background:white;color:var(--warm);font-family:'Raleway',sans-serif;font-size:.72rem;" onchange="handleWeekFilterChange()">
+    <option value="">Todas as semanas</option>
+  </select>
+
+  <button onclick="clearCancelledBookings()" style="background:transparent;border:1px solid rgba(192,82,122,.35);color:var(--warm);padding:5px 12px;font-family:'Raleway',sans-serif;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;">
+    ✕ Limpar canceladas
+  </button>
+</div>
+      
+</div>
       <div id="bookingsList">
         <div class="empty-bookings">Ainda não há marcações. Quando os clientes fizerem pedidos, aparecerão aqui. 🌸</div>
       </div>
@@ -1325,6 +1398,8 @@ function selectSlot(t){
 const SHEETS_URL = "https://script.google.com/macros/s/AKfycbx9k2OBIx0j8qAmFW6xqGF3nG9yPS3BNPIdABE_HvcEszQaBmsCH6R--F1nyE7h1VF1/exec";
 
 let bookings = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
+let selectedMonthFilter = '';
+let selectedWeekFilter = '';
 
 async function saveBookingToSheet(bookingObj) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
@@ -1485,6 +1560,7 @@ if (!Array.isArray(data)) return [];
         ? 'cancelled'
         : 'pending',
       professional: row.Profissional || row.Professional || '',
+      finalPrice: Number(row.finalPrice || 0)
     };
   })
   .filter(b => 
@@ -1595,7 +1671,10 @@ function submitBooking(){
     notes,
     date:selectedDate,
     time:it.time,
-    duration: duracao
+    duration: duracao,
+    finalPrice: Number(servicePrices[it.service] || 0),
+    createdAt: new Date().toISOString(),
+    status: 'pending'
   };
 
   bookings.push(b);
@@ -1819,6 +1898,243 @@ async function handleAdminLogin(){
 document.getElementById('adminCalTabMarta').style.display = selectedProfile === 'Marta' ? 'inline-block' : 'none';
 }
 function logoutAdmin(){document.getElementById('adminPanel').classList.remove('show');document.body.style.overflow='';}
+
+function getBookingPrice(booking){
+  const finalPrice = Number(booking.finalPrice);
+
+  if(!Number.isNaN(finalPrice) && finalPrice >= 0){
+    return finalPrice;
+  }
+
+  return Number(servicePrices[booking.service] || 0);
+}
+
+function parsePriceInput(value){
+  const normalized = String(value || '')
+    .replace(/\s/g, '')
+    .replace(',', '.');
+
+  const parsed = Number(normalized);
+
+  if(Number.isNaN(parsed) || parsed < 0){
+    return null;
+  }
+
+  return Math.round(parsed * 100) / 100;
+}
+
+async function updateBookingPrice(bookingId){
+  const input = document.getElementById(`priceInput_${bookingId}`);
+
+  if(!input){
+    alert('Não foi possível encontrar o campo do preço.');
+    return;
+  }
+
+  const newPrice = parsePriceInput(input.value);
+
+  if(newPrice === null){
+    alert('Insira um preço válido. Exemplo: 25 ou 25,50');
+    input.focus();
+    return;
+  }
+
+  const bookingIndex = bookings.findIndex(b => String(b.id) === String(bookingId));
+
+  if(bookingIndex === -1){
+    alert('Marcação não encontrada.');
+    return;
+  }
+
+  bookings[bookingIndex].finalPrice = newPrice;
+
+  saveBookingsLocal();
+
+  try{
+    await updateBookingPriceOnSheet(bookingId, newPrice);
+  }catch(error){
+    console.error('Erro ao atualizar preço na Sheet:', error);
+    alert('O preço foi atualizado localmente, mas ocorreu um erro ao gravar na Google Sheet.');
+  }
+
+  await renderAdminBookings();
+
+  alert('Preço atualizado com sucesso.');
+}
+
+async function updateBookingPriceOnSheet(bookingId, finalPrice){
+  try{
+    await fetch(SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        action: 'updateBookingPrice',
+        id: String(bookingId),
+        finalPrice: String(finalPrice)
+      })
+    });
+  }catch(error){
+    console.error('Sheet updateBookingPrice error:', error);
+    throw error;
+  }
+}
+
+function formatMonthLabel(monthKey){
+  const [year, month] = monthKey.split('-').map(Number);
+  const date = new Date(year, month - 1, 1);
+
+  return date.toLocaleDateString('pt-PT', {
+    month: 'long',
+    year: 'numeric'
+  });
+}
+
+function populateMonthFilter(bookingsList){
+  const monthSelect = document.getElementById('monthFilter');
+  if(!monthSelect) return;
+
+  const monthKeys = [...new Set(
+    bookingsList
+      .map(b => String(b.date || '').trim())
+      .filter(Boolean)
+      .map(dateStr => dateStr.slice(0, 7))
+  )].sort();
+
+  monthSelect.innerHTML = `<option value="">Todos os meses</option>` +
+    monthKeys.map(monthKey => {
+      const selected = monthKey === selectedMonthFilter ? 'selected' : '';
+      return `<option value="${monthKey}" ${selected}>${formatMonthLabel(monthKey)}</option>`;
+    }).join('');
+}
+
+function handleMonthFilterChange(){
+  const monthSelect = document.getElementById('monthFilter');
+  selectedMonthFilter = monthSelect ? monthSelect.value : '';
+  selectedWeekFilter = '';
+
+  const weekSelect = document.getElementById('weekFilter');
+  if(weekSelect){
+    weekSelect.innerHTML = `<option value="">Todas as semanas</option>`;
+  }
+
+  renderAdminBookings();
+}
+
+function handleWeekFilterChange(){
+  const weekSelect = document.getElementById('weekFilter');
+  selectedWeekFilter = weekSelect ? weekSelect.value : '';
+  renderAdminBookings();
+}
+
+function getMonthBookings(bookingsList, monthKey){
+  if(!monthKey) return bookingsList;
+  return bookingsList.filter(b => String(b.date || '').slice(0, 7) === monthKey);
+}
+
+function formatWeekLabel(startDate, endDate){
+  const startDay = startDate.getDate();
+  const endDay = endDate.getDate();
+
+  const sameMonth = startDate.getMonth() === endDate.getMonth() &&
+                    startDate.getFullYear() === endDate.getFullYear();
+
+  const startMonthLabel = startDate.toLocaleDateString('pt-PT', { month: 'long' });
+  const endMonthLabel = endDate.toLocaleDateString('pt-PT', { month: 'long' });
+
+  if(sameMonth){
+    return `${startDay}-${endDay} ${startMonthLabel}`;
+  }
+
+  return `${startDay} ${startMonthLabel} - ${endDay} ${endMonthLabel}`;
+}
+
+function buildWeeksForMonth(bookingsList, monthKey){
+  if(!monthKey) return [];
+
+  const [year, month] = monthKey.split('-').map(Number);
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDay = new Date(year, month, 0);
+
+  const weeks = [];
+  let cursor = new Date(firstDay);
+
+  while(cursor <= lastDay){
+    const day = cursor.getDay(); // 0 domingo, 1 segunda, ..., 6 sábado
+
+    if(day === 0){
+      cursor.setDate(cursor.getDate() + 1);
+      continue;
+    }
+
+    if(day !== 1){
+      cursor.setDate(cursor.getDate() + 1);
+      continue;
+    }
+
+    const start = new Date(cursor);
+    const end = new Date(cursor);
+    end.setDate(end.getDate() + 5);
+
+    if(end > lastDay){
+      end.setTime(lastDay.getTime());
+    }
+
+    const key = `${start.toISOString().split('T')[0]}|${end.toISOString().split('T')[0]}`;
+
+    weeks.push({
+      key,
+      start: new Date(start),
+      end: new Date(end),
+      label: formatWeekLabel(start, end)
+    });
+
+    cursor.setDate(cursor.getDate() + 7);
+  }
+
+  return weeks;
+}
+
+function populateWeekFilter(bookingsList){
+  const weekSelect = document.getElementById('weekFilter');
+  if(!weekSelect) return;
+
+  if(!selectedMonthFilter){
+    weekSelect.innerHTML = `<option value="">Todas as semanas</option>`;
+    return;
+  }
+
+  const monthBookings = getMonthBookings(bookingsList, selectedMonthFilter);
+  const weeks = buildWeeksForMonth(monthBookings, selectedMonthFilter);
+
+  weekSelect.innerHTML = `<option value="">Todas as semanas</option>` +
+    weeks.map(week => {
+      const selected = week.key === selectedWeekFilter ? 'selected' : '';
+      return `<option value="${week.key}" ${selected}>${week.label}</option>`;
+    }).join('');
+}
+
+function filterBookingsBySelectedPeriod(bookingsList){
+  let filtered = [...bookingsList];
+
+  if(selectedMonthFilter){
+    filtered = filtered.filter(b => String(b.date || '').slice(0, 7) === selectedMonthFilter);
+  }
+
+  if(selectedWeekFilter){
+    const [startDate, endDate] = selectedWeekFilter.split('|');
+
+    filtered = filtered.filter(b => {
+      const bookingDate = String(b.date || '').trim();
+      return bookingDate >= startDate && bookingDate <= endDate;
+    });
+  }
+
+  return filtered;
+}
+
 async function renderAdminBookings(){
   // Show loading
   document.getElementById('bookingsList').innerHTML='<div class="empty-bookings">⏳ A carregar marcações...</div>';
@@ -1826,6 +2142,7 @@ async function renderAdminBookings(){
 
   // Load from Google Sheet
   const sheetData = await loadBookingsFromSheet();
+   
   console.log('DEBUG BOOKINGS SHEETDATA:', sheetData);
    console.log('DEBUG PRIMEIRO BOOKING:', sheetData && sheetData[0]);
   if(sheetData.length > 0){
@@ -1838,32 +2155,51 @@ async function renderAdminBookings(){
 
   const todayStr=new Date().toISOString().split('T')[0];
   const myBookings = bookings.filter(b => b.professional === selectedProfile);
- 
-  const totalValue = myBookings.reduce((sum, b) => sum + Number(servicePrices[b.service] || 0), 0);
+  populateMonthFilter(myBookings);
+  populateWeekFilter(myBookings);
+  
+ const visibleBookings = filterBookingsBySelectedPeriod(myBookings);
+
+const totalValue = visibleBookings.reduce((sum, b) => sum + getBookingPrice(b), 0);
    console.log('DEBUG TOTAL VALUE:', totalValue);
   console.log('DEBUG PREÇOS:', myBookings.map(b => ({ service: b.service, price: servicePrices[b.service] })));
-  const receivedValue = myBookings.reduce((sum, b) => sum + (Number(b.receivedValue || 0)), 0);
- const pendingValue = totalValue - receivedValue;
+  const now = new Date();
+
+const receivedValue = visibleBookings.reduce((sum, b) => {
+  const bookingDateTime = new Date(`${b.date}T${b.time}:00`);
+  const isDone = b.status === 'confirmed' && bookingDateTime <= now;
+ return sum + (isDone ? getBookingPrice(b) : 0);
+}, 0);
+ 
+     const pendingValue = totalValue - receivedValue;
 
 document.getElementById('statTotalValue').textContent = totalValue.toFixed(2).replace('.', ',') + ' €';
 document.getElementById('statReceivedValue').textContent = receivedValue.toFixed(2).replace('.', ',') + ' €';
 document.getElementById('statPendingValue').textContent = pendingValue.toFixed(2).replace('.', ',') + ' €';
    
-  document.getElementById('statTotal').textContent = myBookings.length;
-  document.getElementById('statPending').textContent = myBookings.filter(b=>b.status==='pending').length;
-   console.log('DEBUG STATUSS:', myBookings.map(b => b.status));
-  document.getElementById('statConfirmed').textContent = myBookings.filter(b=>b.status==='confirmed').length;
-  document.getElementById('statToday').textContent = myBookings.filter(b=>b.date===todayStr).length;
+  document.getElementById('statTotal').textContent = visibleBookings.length;
+  document.getElementById('statPending').textContent = visibleBookings.filter(b=>b.status==='pending').length;
+   console.log('DEBUG STATUSS:', visibleBookings.map(b => b.status));
+  document.getElementById('statConfirmed').textContent = visibleBookings.filter(b=>b.status==='confirmed').length;
+  document.getElementById('statToday').textContent = visibleBookings.filter(b=>b.date===todayStr).length;
   document.getElementById('bookingsCount').textContent=bookings.length+' marcações';
-  if(!bookings.length){document.getElementById('bookingsList').innerHTML='<div class="empty-bookings">Ainda não há marcações. Quando os clientes fizerem pedidos, aparecerão aqui. 🌸</div>';return;}
-  const sorted=[...bookings].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  if(!visibleBookings.length){
+  document.getElementById('bookingsList').innerHTML='<div class="empty-bookings">Ainda não há marcações. Quando os clientes fizerem pedidos, aparecerão aqui. 🌸</div>';
+  return;
+}
+  const sorted = [...visibleBookings].sort((a, b) => {
+  const dateA = new Date(`${a.date}T${a.time}:00`);
+  const dateB = new Date(`${b.date}T${b.time}:00`);
+  return dateA - dateB; // crescente
+});
   document.getElementById('bookingsList').innerHTML=sorted.map(b=>{
     const sc=b.status==='confirmed'?'status-confirmed':b.status==='cancelled'?'status-cancelled':'status-pending';
     const sl=b.status==='confirmed'?'Confirmada':b.status==='cancelled'?'Cancelada':'Pendente';
     const profTag = b.professional ? `<span style="display:inline-block;padding:2px 8px;font-size:.62rem;letter-spacing:.1em;border-radius:2px;font-weight:500;background:${b.professional==='Bete'?'rgba(192,82,122,.15)':'rgba(201,168,76,.15)'};color:${b.professional==='Bete'?'var(--rose-deep)':'var(--gold-deep)'};margin-left:6px">${b.professional}</span>` : '';
-    const serviceValue = Number(servicePrices[b.service] || 0);
+    const serviceValue = getBookingPrice(b);
+const serviceBaseValue = Number(servicePrices[b.service] || 0);
    
-    return`<div class="booking-row"><div><div class="br-name">${b.name}${profTag}</div><div style="font-size:.7rem;color:var(--warm);margin-top:2px">${formatDate(b.date)} às ${b.time}h</div></div><div class="br-service">${b.service}</div><div class="br-contact">📱 ${b.phone}<br>✉ ${b.email}</div><div style="font-size:.78rem;font-weight:600;color:var(--gold-deep);min-width:70px;text-align:right;">${serviceValue.toFixed(2).replace('.', ',')} €</div><div><span class="br-status ${sc}">${sl}</span></div><div style="display:flex;gap:4px;flex-wrap:wrap">${b.status==='pending'?`<button class="confirm-btn" onclick="updateStatus('${b.id}','confirmed')">✓ Confirmar</button>`:''} ${b.status!=='cancelled'?`<button class="cancel-btn" onclick="cancelBooking('${b.id}')">✕ Cancelar</button>`:''}</div></div>`;
+    return `<div class="booking-row"><div><div class="br-name">${b.name}${profTag}</div><div style="font-size:.7rem;color:var(--warm);margin-top:2px">${formatDate(b.date)} às ${b.time}h</div></div><div class="br-service">${b.service}</div><div class="br-contact">📱 ${b.phone}<br>✉ ${b.email}</div><div class="price-editor-wrap"><div style="font-size:.78rem;font-weight:600;color:var(--gold-deep);">${serviceValue.toFixed(2).replace('.', ',')} €</div><div class="price-editor-label">Editar preço</div><div class="price-editor-row"><input type="text" id="priceInput_${b.id}" class="price-editor-input" value="${serviceValue.toFixed(2).replace('.', ',')}"><button class="price-save-btn" onclick="updateBookingPrice('${b.id}')">Guardar</button></div><div class="price-base-note">Base: ${serviceBaseValue.toFixed(2).replace('.', ',')} €</div></div><div><span class="br-status ${sc}">${sl}</span></div><div style="display:flex;gap:4px;flex-wrap:wrap">${b.status==='pending'?`<button class="confirm-btn" onclick="updateStatus('${b.id}','confirmed')">✓ Confirmar</button>`:''} ${b.status!=='cancelled'?`<button class="cancel-btn" onclick="cancelBooking('${b.id}')">✕ Cancelar</button>`:''}</div></div>`;
   }).join('');
 }
 async function updateStatus(id,status){
@@ -1896,6 +2232,45 @@ async function clearCancelledBookings(){
 
   if (selectedDate) renderSlots(selectedDate);
 }
+
+async function updateBookingPrice(id){
+  const input = document.getElementById(`priceInput_${id}`);
+  const value = parsePriceInput(input.value);
+
+  if(value === null){
+    alert('Preço inválido');
+    return;
+  }
+
+  const booking = bookings.find(b => String(b.id) === String(id));
+
+  if(!booking){
+    alert('Marcação não encontrada');
+    return;
+  }
+
+  try{
+    await fetch(SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: new URLSearchParams({
+        action: 'updateBookingPrice',
+        finalPrice: value,
+        date: booking.date,
+        time: booking.time
+      })
+    });
+
+    booking.finalPrice = value;
+    saveBookingsLocal();
+    renderAdminBookings();
+
+  }catch(err){
+    alert('Erro ao atualizar preço');
+    console.error(err);
+  }
+}
+
 
 // ===== UTILS =====
 function scrollToBooking(){document.getElementById('marcacoes').scrollIntoView({behavior:'smooth'});}
