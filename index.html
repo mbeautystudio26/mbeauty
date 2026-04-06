@@ -2715,12 +2715,20 @@ if (t === '10:00') {
 
   const tooltip = isBooked ? ' title="Horário com marcação"' : '';
 
+  const booking = savedBookings.find(b => {
+  const slots = getBlockedAdminSlots(b.time, getBookingDurationForCalendar(b));
+  return slots.includes(t);
+});
+const clientName = booking ? booking.name : '';
+  
+  
+  
   return '<div class="' + cls + '"' +
-    ((isBooked || !canEdit) ? '' : ' onclick="toggleAdminBlock(\'' + t + '\')"') +
-    tooltip + '>' +
-    t +
-    (isBooked ? '<br><span style="font-size:.55rem">marc.</span>' : '') +
-    '</div>';
+  ((isBooked || !canEdit) ? '' : ' onclick="toggleAdminBlock(\'' + t + '\')"') +
+  tooltip + '>' +
+  t +
+  (isBooked ? '<br><span style="font-size:.55rem">' + clientName + '</span>' : '') +
+  '</div>';
 }).join('');
 
 document.getElementById('adminBlockSlots').innerHTML = html;
