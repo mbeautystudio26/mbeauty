@@ -2300,6 +2300,10 @@ function formatWeekLabel(startDate, endDate){
   return `${startDay} ${startMonthLabel} - ${endDay} ${endMonthLabel}`;
 }
 
+function formatLocalDateKey(date){
+  return date.toLocaleDateString('en-CA', { timeZone: 'Europe/Lisbon' });
+}
+
 function buildWeeksForMonth(bookingsList, monthKey){
   if(!monthKey) return [];
 
@@ -2317,11 +2321,15 @@ function buildWeeksForMonth(bookingsList, monthKey){
     const startDate = new Date(year, month - 1, range.start);
     const endDate = new Date(year, month - 1, range.end);
 
-    const key = `${startDate.toISOString().split('T')[0]}|${endDate.toISOString().split('T')[0]}`;
-    const monthLabel = startDate.toLocaleDateString('pt-PT', { month: 'long' });
+    const startKey = formatLocalDateKey(startDate);
+    const endKey = formatLocalDateKey(endDate);
+    const monthLabel = startDate.toLocaleDateString('pt-PT', {
+      month: 'long',
+      timeZone: 'Europe/Lisbon'
+    });
 
     return {
-      key,
+      key: `${startKey}|${endKey}`,
       start: startDate,
       end: endDate,
       label: `${range.start}-${range.end} ${monthLabel}`
