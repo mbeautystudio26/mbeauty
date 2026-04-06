@@ -2148,6 +2148,30 @@ async function updateBookingPriceOnSheet(bookingId, finalPrice){
   }
 }
 
+function hasManualBookingConflict(date, startTime, endTime, professional){
+  const newStart = timeToMin(startTime);
+  const newEnd = timeToMin(endTime);
+
+  return bookings.some(b => {
+    if(String(b.professional || '') !== String(professional || '')) return false;
+    if(String(b.date || '') !== String(date || '')) return false;
+    if(String(b.status || '') === 'cancelled') return false;
+
+    const existingStart = timeToMin(String(b.time || '').trim());
+
+    let existingEnd = null;
+
+    if(b.endTime){
+      existingEnd = timeToMin(String(b.endTime).trim());
+    } else {
+      const duration = getBookingDurationForCalendar(b);
+      existingEnd = existingStart + duration;
+    }
+
+    return newStart < existingEnd && newEnd > existingStart;
+  });
+}
+
 async function saveManualBooking(){
   const name = document.getElementById('manualBookingName').value.trim();
   const phone = document.getElementById('manualBookingPhone').value.trim();
@@ -2158,15 +2182,20 @@ async function saveManualBooking(){
 const endTime = document.getElementById('manualBookingEndTime').value;
   const notes = document.getElementById('manualBookingNotes').value.trim();
 
-  if(!name || !phone || !service || !date || !startTime || !endTime){
-    if(startTime >= endTime){
+ if(!name || !phone || !service || !date || !startTime || !endTime){
+  alert('Preenche os campos obrigatórios.');
+  return;
+}
+
+if(startTime >= endTime){
   alert('A hora de fim tem de ser maior que a de início.');
   return;
 }
-    
-    alert('Preenche os campos obrigatórios.');
-    return;
-  }
+
+if(hasManualBookingConflict(date, startTime, endTime, selectedProfile)){
+  alert('Já existe uma marcação sobreposta nesse horário para essa profissional.');
+  return;
+}
 
   const parsedPrice = parsePriceInput(priceInput);
   if(parsedPrice === null){
