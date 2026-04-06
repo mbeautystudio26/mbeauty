@@ -2467,9 +2467,14 @@ document.getElementById('statPendingValue').textContent = pendingValue.toFixed(2
   document.getElementById('bookingsCount').textContent=bookings.length+' marcações';
  
  document.getElementById('bookingsActions').innerHTML = `
-  <button onclick="confirmSelectedBookings()" style="background:#28a745;color:#fff;padding:6px 12px;border:none;border-radius:6px;cursor:pointer;">
-    ✓ Confirmar selecionadas
-  </button>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button onclick="confirmSelectedBookings()" style="background:#28a745;color:#fff;padding:6px 12px;border:none;border-radius:6px;cursor:pointer;">
+      ✓ Confirmar selecionadas
+    </button>
+    <button onclick="cancelSelectedBookings()" style="background:#c05a7a;color:#fff;padding:6px 12px;border:none;border-radius:6px;cursor:pointer;">
+      ✕ Cancelar selecionadas
+    </button>
+  </div>
 `;
  
  
@@ -2526,6 +2531,25 @@ async function confirmSelectedBookings(){
   bookings = await loadBookingsFromSheet();
   renderAdminBookings();
 }
+
+async function cancelSelectedBookings(){
+  if(!selectedBookingIds.length){
+    alert('Seleciona pelo menos uma marcação.');
+    return;
+  }
+
+  if(!confirm(`Cancelar ${selectedBookingIds.length} marcação(ões)?`)){
+    return;
+  }
+
+  for(const id of selectedBookingIds){
+    await updateStatus(id, 'cancelled');
+  }
+
+  selectedBookingIds = [];
+}
+
+
 
 async function clearCancelledBookings(){
   const count = bookings.filter(b => b.status === 'cancelled').length;
