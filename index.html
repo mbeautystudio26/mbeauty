@@ -220,7 +220,22 @@ nav{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(253,247,249,
 .success-sub{font-size:.82rem;color:var(--warm);line-height:1.7;font-weight:300}
 
 /* ADMIN MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,21,32,.65);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  z-index:99999;
+
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-overlay.show{
+  display:flex;
+}
+
+
 .modal-overlay.show{display:flex}
 .modal{background:white;width:100%;max-width:400px;overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(44,21,32,.25)}
 .modal-header{background:linear-gradient(135deg,var(--rose-deep),#9e3f62);padding:28px 32px;text-align:center;position:relative}
@@ -1559,6 +1574,7 @@ const SHEETS_URL = "https://script.google.com/macros/s/AKfycbx9k2OBIx0j8qAmFW6xq
 
 let bookings = JSON.parse(localStorage.getItem('mbeauty_bookings') || '[]');
 let selectedBookingIds = [];
+let editingBooking = null;
 
 let selectedMonthFilter = '';
 let selectedWeekFilter = '';
@@ -2494,9 +2510,33 @@ document.getElementById('statPendingValue').textContent = pendingValue.toFixed(2
     const serviceValue = getBookingPrice(b);
 const serviceBaseValue = Number(servicePrices[b.service] || 0);
    
-  return `<div class="booking-row"><div><div style="display:flex;align-items:center;gap:8px;"><input type="checkbox" ${selectedBookingIds.includes(String(b.id)) ? 'checked' : ''} onchange="toggleBookingSelection('${b.id}', this.checked)"><div class="br-name">${b.name}${profTag}</div></div><div style="font-size:.7rem;color:var(--warm);margin-top:2px">${formatDate(b.date)} às ${b.time}h</div></div><div class="br-service">${b.service}</div><div class="br-contact">📱 ${b.phone}<br>✉ ${b.email}</div><div class="price-editor-wrap"><div style="font-size:.78rem;font-weight:600;color:var(--gold-deep);">${serviceValue.toFixed(2).replace('.', ',')} €</div><div class="price-editor-label">Editar preço</div><div class="price-editor-row"><input type="text" id="priceInput_${b.id}" class="price-editor-input" value="${serviceValue.toFixed(2).replace('.', ',')}"><button class="price-save-btn" onclick="updateBookingPrice('${b.id}')">Guardar</button></div><div class="price-base-note">Base: ${serviceBaseValue.toFixed(2).replace('.', ',')} €</div></div><div><span class="br-status ${sc}">${sl}</span></div><div style="display:flex;gap:4px;flex-wrap:wrap">${b.status==='pending'?`<button class="confirm-btn" onclick="updateStatus('${b.id}','confirmed')">✓ Confirmar</button>`:''} ${b.status!=='cancelled'?`<button class="cancel-btn" onclick="cancelBooking('${b.id}')">✕ Cancelar</button>`:''}</div></div>`;
+ const actionButtons = `
+  <div style="display:flex;gap:4px;flex-wrap:wrap">
+    ${b.status==='pending' ? `<button class="confirm-btn" onclick="updateStatus('${b.id}','confirmed')">✓ Confirmar</button>` : ''}
+    ${b.status!=='cancelled' ? `<button class="cancel-btn" onclick="cancelBooking('${b.id}')">✕ Cancelar</button>` : ''}
+  </div>
+`;
+
+
+return `<div class="booking-row"><div><div style="display:flex;align-items:center;gap:8px;"><input type="checkbox" ${selectedBookingIds.includes(String(b.id)) ? 'checked' : ''} onchange="toggleBookingSelection('${b.id}', this.checked)"><div class="br-name">${b.name}${profTag}</div></div><div style="font-size:.7rem;color:var(--warm);margin-top:2px">${formatDate(b.date)} às ${b.time}h</div></div><div class="br-service">${b.service}</div><div class="br-contact">📱 ${b.phone}<br>✉ ${b.email}</div><div class="price-editor-wrap"><div style="font-size:.78rem;font-weight:600;color:var(--gold-deep);">${serviceValue.toFixed(2).replace('.', ',')} €</div><div class="price-editor-label">Editar preço</div><div class="price-editor-row"><input type="text" id="priceInput_${b.id}" class="price-editor-input" value="${serviceValue.toFixed(2).replace('.', ',')}"><button class="price-save-btn" onclick="updateBookingPrice('${b.id}')">Guardar</button></div><div class="price-base-note">Base: ${serviceBaseValue.toFixed(2).replace('.', ',')} €</div></div><div><span class="br-status ${sc}">${sl}</span></div><div style="display:flex;gap:4px;flex-wrap:wrap"><button class="edit-btn" onclick="testEditBooking('${b.id}')">✎ Editar</button>${b.status==='pending'?`<button class="confirm-btn" onclick="updateStatus('${b.id}','confirmed')">✓ Confirmar</button>`:''} ${b.status!=='cancelled'?`<button class="cancel-btn" onclick="cancelBooking('${b.id}')">✕ Cancelar</button>`:''}</div></div>`;
   }).join('');
 }
+
+function testEditBooking(id){
+  const booking = bookings.find(b => String(b.id) === String(id));
+  if(!booking) return;
+
+  editingBooking = booking;
+
+  const modal = document.getElementById('editBookingModal');
+  if(modal){
+    modal.classList.add('show');
+  }
+}
+
+
+
+
 async function updateStatus(id,status){
   await updateStatusOnSheet(id,status);
   await new Promise(r => setTimeout(r, 800));
@@ -3180,6 +3220,21 @@ document.addEventListener('keydown', e=>{
     <img id="plZoomImg" src="img/precario.png" alt="Preçário ampliado">
     <div class="pl-zoom-hint">Clique em qualquer lugar para fechar · ESC</div>
 </div>
+
+<div class="modal-overlay" id="editBookingModal">
+  <div class="modal">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('editBookingModal').classList.remove('show')">x</button>
+      <div class="modal-title">Editar Marcação</div>
+      <div class="modal-sub">Painel Admin</div>
+    </div>
+
+    <div class="modal-body">
+      <p>Modal de edição aberto.</p>
+    </div>
+  </div>
+</div>
+
 
 </body>
 </html>
