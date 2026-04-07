@@ -554,7 +554,33 @@ dialog::backdrop {
   }
 }
 
+@media (max-width: 768px) {
+  .booking-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+    padding: 16px;
+  }
 
+  .br-contact,
+  .br-service,
+  .price-editor-wrap {
+    font-size: .85rem;
+  }
+
+  .price-editor-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .price-editor-input,
+  .price-save-btn,
+  .edit-btn,
+  .confirm-btn,
+  .cancel-btn {
+    width: 100%;
+  }
+}
 
 
 
