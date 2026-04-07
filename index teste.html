@@ -582,7 +582,17 @@ dialog::backdrop {
   }
 }
 
+@media (max-width: 680px) {
+  .slots-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
 
+  .slot {
+    padding: 12px 6px;
+    font-size: .8rem;
+  }
+}
 
 
 </style>
