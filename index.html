@@ -608,6 +608,275 @@ dialog::backdrop {
   }
 }
 
+.admin-gallery-section{
+  margin-bottom: 24px;
+}
+
+#adminGalleryList{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.admin-gallery-card{
+  background: #fff;
+  border: 1px solid rgba(201,168,76,.25);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(44,21,32,.06);
+}
+
+.admin-gallery-card img{
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.admin-gallery-delete{
+  width: 100%;
+  background: #c94f4f;
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin-gallery-delete:hover{
+  opacity: .9;
+}
+
+
+
+
+
+
+/* SITE GALLERY — INSTAGRAM STYLE */
+.gallery-dialog{
+  width:min(1180px,96vw);
+  min-height:78vh;
+  border:none;
+  border-radius:28px;
+  padding:0;
+  overflow:hidden;
+  background:transparent;
+  box-shadow:0 28px 90px rgba(44,21,32,.28);
+}
+.gallery-dialog::backdrop{
+  background:rgba(25,12,20,.72);
+  backdrop-filter:blur(4px);
+}
+.gallery-shell{
+  background:linear-gradient(180deg,#fff 0%,#fff9fb 100%);
+  min-height:78vh;
+  display:flex;
+  flex-direction:column;
+}
+.gallery-topbar{
+  position:sticky;
+  top:0;
+  z-index:5;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px 24px;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(201,168,76,.22);
+}
+.gallery-topbar-left{display:flex;align-items:center;gap:14px}
+.gallery-avatar{
+  width:54px;height:54px;border-radius:50%;overflow:hidden;
+  border:2px solid rgba(201,168,76,.35);
+  box-shadow:0 8px 20px rgba(192,82,122,.12);
+  flex-shrink:0;
+}
+.gallery-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-title-wrap{display:flex;flex-direction:column;gap:2px}
+.gallery-title-main{font-family:'Cormorant Garamond',serif;font-size:1.65rem;line-height:1;color:var(--charcoal)}
+.gallery-title-sub{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep)}
+.gallery-meta{font-size:.78rem;color:var(--warm)}
+.gallery-close-btn{
+  width:42px;height:42px;border-radius:50%;border:1px solid rgba(201,168,76,.3);
+  background:white;color:var(--charcoal);font-size:1.4rem;cursor:pointer;transition:all .25s;
+}
+.gallery-close-btn:hover{transform:rotate(90deg);color:var(--rose-deep);border-color:var(--rose-deep)}
+.gallery-body{padding:22px 24px 28px}
+.gallery-intro{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  margin-bottom:18px;padding:0 2px;
+}
+.gallery-intro h3{font-size:.86rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);font-weight:600}
+.gallery-intro p{font-size:.82rem;color:var(--warm)}
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:16px;
+}
+.gallery-post{
+  position:relative;
+  overflow:hidden;
+  border-radius:22px;
+  background:#fff;
+  border:1px solid rgba(201,168,76,.18);
+  box-shadow:0 12px 30px rgba(44,21,32,.06);
+  transition:transform .28s, box-shadow .28s;
+  cursor:pointer;
+}
+.gallery-post:hover{transform:translateY(-4px);box-shadow:0 18px 38px rgba(192,82,122,.16)}
+.gallery-post-media{position:relative;aspect-ratio:1/1;overflow:hidden;background:#f8eef2}
+.gallery-post img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.gallery-post:hover img{transform:scale(1.06)}
+.gallery-post-overlay{
+  position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:14px;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(44,21,32,.55) 100%);
+  opacity:0;transition:opacity .28s;
+}
+.gallery-post:hover .gallery-post-overlay{opacity:1}
+.gallery-stat{font-size:.74rem;color:white;font-weight:600;letter-spacing:.04em}
+.gallery-badge{
+  position:absolute;top:12px;left:12px;padding:6px 10px;border-radius:999px;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+  font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rose-deep);font-weight:700;
+}
+.gallery-empty{
+  padding:48px 18px;text-align:center;background:white;border:1px dashed rgba(201,168,76,.4);
+  border-radius:22px;color:var(--warm)
+}
+.gallery-empty strong{display:block;color:var(--charcoal);margin-bottom:6px}
+.gallery-lightbox{
+  position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;
+  background:rgba(20,10,16,.88);padding:20px;
+}
+.gallery-lightbox.show{display:flex}
+.gallery-lightbox img{max-width:min(92vw,1200px);max-height:88vh;border-radius:24px;box-shadow:0 20px 70px rgba(0,0,0,.35)}
+.gallery-lightbox-close{
+  position:fixed;top:18px;right:18px;width:44px;height:44px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.16);color:white;font-size:1.5rem;cursor:pointer
+}
+@media(max-width:680px){
+  .gallery-dialog{width:100vw;max-width:100vw;min-height:100vh;border-radius:0}
+  .gallery-shell{min-height:100vh}
+  .gallery-topbar{padding:16px}
+  .gallery-body{padding:16px 16px 24px}
+  .gallery-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .gallery-post{border-radius:16px}
+  .gallery-avatar{width:46px;height:46px}
+  .gallery-title-main{font-size:1.35rem}
+}
+
+
+.gallery-card {
+  position: relative;
+}
+
+.gallery-card img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
+.gallery-watermark {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-25deg);
+
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem; /* um pouco menor */
+
+  letter-spacing: 0.25em;
+  color: rgba(161, 130, 25, 0.822);
+
+  text-shadow: 0 0 6px rgba(0,0,0,0.25); /* 👈 isto resolve o problema */
+
+  pointer-events: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 0 10px rgba(0,0,0,0.35);
+}
+
+.gallery-post-overlay {
+  pointer-events: none;
+}
+
+.gallery-post {
+  cursor: pointer;
+}
+
+#galleryLightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+#galleryLightbox.show {
+  display: flex;
+}
+
+#galleryLightbox img {
+  max-width: 92%;
+  max-height: 92%;
+  object-fit: contain;
+}
+
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+.gallery-lightbox.show {
+  display: flex;
+}
+
+.gallery-lightbox img {
+  max-width: 92%;
+  max-height: 92%;
+  object-fit: contain;
+}
+
+.gallery-lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.gallery-lightbox-watermark {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-25deg);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(161, 130, 25, 0.822);
+  text-shadow: 0 0 8px rgba(0,0,0,0.25);
+  pointer-events: none;
+}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -1167,7 +1436,7 @@ dialog::backdrop {
     <div style="margin-top:20px;">
   <h3>📸 Galeria</h3>
 
-  <input type="file" id="galleryUpload" accept="image/*">
+  <input type="file" id="galleryUpload" accept="image/*" multiple>
   <button onclick="addImageToGallery()">Adicionar imagem</button>
 </div>
     
@@ -1342,6 +1611,17 @@ let selectedProfessional = null;
 
 
 let galleryImages = JSON.parse(localStorage.getItem('galleryImages')) || [];
+
+function getGalleryImages(){
+  return Array.isArray(galleryImages) ? galleryImages : [];
+}
+
+function updateGalleryCount(){
+  const countEl = document.getElementById('galleryImageCount');
+  if(!countEl) return;
+  const total = getGalleryImages().length;
+  countEl.textContent = `${total} ${total === 1 ? 'publicação' : 'publicações'}`;
+}
   
 function loadGallery() {
   const grid = document.getElementById('galleryDialogGrid');
@@ -1349,15 +1629,31 @@ function loadGallery() {
 
   grid.innerHTML = '';
 
-  galleryImages.forEach(src => {
-    const img = document.createElement('img');
-    img.src = src;
-    img.style.width = '100%';
-    img.style.maxWidth = '300px';
-    img.style.borderRadius = '12px';
-    img.style.display = 'block';
+  if (!galleryImages.length) {
+    grid.innerHTML = '<p>Sem imagens na galeria.</p>';
+    return;
+  }
 
-    grid.appendChild(img);
+  galleryImages.forEach((src, index) => {
+    const post = document.createElement('article');
+    post.className = 'gallery-post';
+
+    post.innerHTML = `
+      <div class="gallery-post-media">
+        <span class="gallery-watermark">MBe'auty</span>
+        <img src="${src}" alt="Trabalho ${index + 1} da galeria" loading="lazy">
+        <div class="gallery-post-overlay">
+          <span class="gallery-stat">♡ Destaque</span>
+          <span class="gallery-stat">Ver</span>
+        </div>
+      </div>
+    `;
+
+    post.addEventListener('click', () => {
+  openGalleryLightbox(src);
+});
+
+    grid.appendChild(post);
   });
 }
 
@@ -1369,29 +1665,83 @@ function openGalleryDialog(){
   }
 
   loadGallery();
-  dialog.showModal();
+  if(typeof dialog.showModal === 'function'){
+    dialog.showModal();
+  }
 }
-
 
 function closeGalleryDialog(){
   const dialog = document.getElementById('galleryDialog');
   if (!dialog) return;
-
   dialog.close();
+}
+
+function openGalleryLightbox(src){
+  const lightbox = document.getElementById('galleryLightbox');
+  const img = document.getElementById('galleryLightboxImg');
+
+  if(!lightbox || !img) return;
+
+  img.src = src;
+
+  lightbox.style.display = 'flex';
+  lightbox.style.position = 'fixed';
+  lightbox.style.inset = '0';
+  lightbox.style.background = 'rgba(0,0,0,0.92)';
+  lightbox.style.alignItems = 'center';
+  lightbox.style.justifyContent = 'center';
+  lightbox.style.zIndex = '99999';
+
+  img.style.maxWidth = '92%';
+  img.style.maxHeight = '92%';
+  img.style.objectFit = 'contain';
+
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGalleryLightbox(event){
+  if(event){ event.stopPropagation(); }
+  const lightbox = document.getElementById('galleryLightbox');
+  const img = document.getElementById('galleryLightboxImg');
+  if(!lightbox || !img) return;
+  lightbox.style.display = 'none';
+  img.src = '';
+  if(!document.getElementById('galleryDialog')?.open){
+    document.body.style.overflow = '';
+  }
 }
 
 function addImageToGallery(){
   const input = document.getElementById('galleryUpload');
-  const file = input.files[0];
+  const files = Array.from(input?.files || []);
 
-  if(!file){
-    alert('Escolhe uma imagem');
+  if(!files.length){
+    alert('Escolhe pelo menos uma imagem');
     return;
   }
 
+  let processed = 0;
+
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(e){
+      galleryImages.push(e.target.result);
+      processed += 1;
+
+      if(processed === files.length){
+        localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
+        loadGallery();
+        renderAdminGallery();
+        alert(files.length === 1 ? 'Imagem adicionada!' : `${files.length} imagens adicionadas!`);
+        input.value = '';
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function removeImageFromGallery(index){
-  const confirmar = confirm("Tens a certeza que queres apagar esta imagem?");
-  
+  const confirmar = confirm('Tens a certeza que queres apagar esta imagem?');
   if(!confirmar) return;
 
   galleryImages.splice(index, 1);
@@ -1400,66 +1750,57 @@ function removeImageFromGallery(index){
   renderAdminGallery();
 }
  
-
 function renderAdminGallery(){
   const list = document.getElementById('adminGalleryList');
   if(!list) return;
 
   list.innerHTML = '';
 
-  galleryImages.forEach((src, index) => {
+  getGalleryImages().forEach((src, index) => {
     const container = document.createElement('div');
-    container.style.marginBottom = '10px';
+    container.className = 'admin-gallery-card';
 
-    const img = document.createElement('img');
-    img.src = src;
-    img.style.width = '120px';
-    img.style.display = 'block';
-    img.style.borderRadius = '8px';
-    img.style.marginBottom = '5px';
+   const card = document.createElement("div");
+card.className = "gallery-card";
+
+card.innerHTML = `
+  <img src="${src}">
+  <div class="gallery-watermark">MBe'auty</div>
+`;
+
+gallery.appendChild(card);
 
     const btn = document.createElement('button');
     btn.textContent = 'Apagar';
-    btn.style.background = '#c94f4f';
-    btn.style.color = '#fff';
-    btn.style.border = 'none';
-    btn.style.padding = '5px 10px';
-    btn.style.cursor = 'pointer';
+    btn.className = 'admin-gallery-delete';
     btn.onclick = () => removeImageFromGallery(index);
 
     container.appendChild(img);
     container.appendChild(btn);
-
     list.appendChild(container);
   });
+
+  updateGalleryCount();
 }
-
-
-
-
- 
- 
-  const reader = new FileReader();
-
-  reader.onload = function(e){
-    galleryImages.push(e.target.result);
-    localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
-   
-   loadGallery();
-renderAdminGallery();
-    
-    alert('Imagem adicionada!');
-    input.value = '';
-  };
-
-  reader.readAsDataURL(file);
-}
-
-
-
 
 // carregar quando a página abrir
-document.addEventListener("DOMContentLoaded", loadGallery);
+document.addEventListener("DOMContentLoaded", () => {
+  loadGallery();
+  renderAdminGallery();
+
+  const galleryDialog = document.getElementById('galleryDialog');
+  if(galleryDialog){
+    galleryDialog.addEventListener('click', (e) => {
+      const rect = galleryDialog.getBoundingClientRect();
+      const clickedOutside = e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom;
+      if(clickedOutside){ closeGalleryDialog(); }
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closeGalleryLightbox();
+  });
+});
 
 
 
@@ -3693,18 +4034,42 @@ document.addEventListener('keydown', e=>{
   <button type="button" class="admin-manual-save-btn" onclick="saveEditedBooking()">Guardar</button>
 </div>
   </div>
+
+
+
 </dialog>
 
-<dialog id="galleryDialog" style="width:min(1100px,96vw);min-height:70vh;border:none;border-radius:12px;padding:0;box-shadow:0 20px 60px rgba(44,21,32,.25);">
-  <div style="padding:24px;position:relative;background:#fff;">
-    <button type="button" onclick="closeGalleryDialog()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:24px;cursor:pointer;">&times;</button>
+<dialog id="galleryDialog" class="gallery-dialog" style="z-index: 1;">
+  <div class="gallery-shell">
+    <div class="gallery-topbar">
+      <div class="gallery-topbar-left">
+        <div class="gallery-avatar" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--rose-deep),var(--gold));color:white;font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;">MB</div>
+        <div class="gallery-title-wrap">
+          <div class="gallery-title-main">Galeria</div>
+          <div class="gallery-title-sub">MBe'auty Studio</div>
+          <div class="gallery-meta" id="galleryImageCount">0 publicações</div>
+        </div>
+      </div>
+      <button type="button" class="gallery-close-btn" onclick="closeGalleryDialog()">×</button>
+    </div>
 
-    <div class="modal-title" style="color:#2c1520;margin-bottom:6px;">Galeria</div>
-    <div class="modal-sub" style="color:#7a4560;margin-bottom:18px;">MBe'auty Studio</div>
+    <div class="gallery-body">
+      <div class="gallery-intro">
+        <h3>Momento Beauty Feed</h3>
 
-   <div class="gallery-grid" id="galleryDialogGrid" style="margin-top:20px;"></div>
+      </div>
+      <div class="gallery-grid" id="galleryDialogGrid"></div>
+      <div id="galleryLightbox" class="gallery-lightbox" onclick="closeGalleryLightbox(event)">
+  <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox(event)">x</button>
+  <img id="galleryLightboxImg" src="" alt="Imagem ampliada da galeria">
+   <div class="gallery-lightbox-watermark">MBe'auty</div>
+</div>
+    
+    </div>
   </div>
 </dialog>
+
+
 
 </body>
 </html>
