@@ -464,20 +464,30 @@ nav{
   display:none;
   position:fixed;
   inset:0;
-  background: rgba(44,21,32,.82);
+  background:rgba(44,21,32,.82);
   z-index:10000;
+  pointer-events:none;
 }
 
 .gallery-overlay.show{
   display:block;
+  pointer-events:auto;
 }
 
 .gallery-panel{
   position:fixed;
   inset:0;
-  background:linear-gradient(145deg,#fde8f0 0%,#fdf7f9 50%,#fdf8ee 100%);
+  background:linear-gradient(145deg,#fde8f0,#fdf7f9,#fdf8ee);
   z-index:10001;
+  transform:translateY(100%);
+  transition:transform .3s ease;
   overflow-y:auto;
+  pointer-events:none;
+}
+
+.gallery-panel.show{
+  transform:translateY(0);
+  pointer-events:auto;
 }
 .pl-header{background:rgba(253,247,249,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(201,168,76,0.35);height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:5}
 .pl-brand{display:flex;align-items:center;gap:10px}
@@ -1808,14 +1818,18 @@ function openGalleryDialog(){
   const panel = document.getElementById('galleryPanel');
 
   if (!overlay || !panel) {
-  alert('Falta galleryOverlay ou galleryPanel');
-  return;
-}
+    alert('faltam elementos da galeria');
+    return;
+  }
+
+  alert('entrou na função');
 
   loadGallery();
 
   overlay.classList.add('show');
   panel.classList.add('show');
+
+  alert('adicionou show');
 
   document.body.style.overflow = 'hidden';
 }
