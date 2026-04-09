@@ -1706,9 +1706,7 @@ function closeGalleryLightbox(event){
   if(!lightbox || !img) return;
   lightbox.style.display = 'none';
   img.src = '';
-  if(!document.getElementById('galleryDialog')?.open){
-    document.body.style.overflow = '';
-  }
+  document.body.style.overflow = '';
 }
 
 function addImageToGallery(){
