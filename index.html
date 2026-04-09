@@ -1758,15 +1758,8 @@ function renderAdminGallery(){
     const container = document.createElement('div');
     container.className = 'admin-gallery-card';
 
-   const card = document.createElement("div");
-card.className = "gallery-card";
-
-card.innerHTML = `
-  <img src="${src}">
-  <div class="gallery-watermark">MBe'auty</div>
-`;
-
-gallery.appendChild(card);
+    const img = document.createElement('img');
+    img.src = src;
 
     const btn = document.createElement('button');
     btn.textContent = 'Apagar';
