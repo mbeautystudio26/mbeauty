@@ -615,17 +615,18 @@ dialog::backdrop {
 #adminGalleryList,
 #adminGalleryListV2{
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 14px;
   margin-bottom: 20px;
 }
 
-.admin-gallery-card{
-  background: #fff;
-  border: 1px solid rgba(201,168,76,.25);
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 4px 12px rgba(44,21,32,.06);
+.admin-gallery-card img{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin-bottom: 8px;
 }
 
 .admin-gallery-card img{
@@ -923,7 +924,7 @@ dialog::backdrop {
         <button class="btn-rose" onclick="scrollToBooking()">Agendar Serviço</button>
         <button class="btn-outline" onclick="scrollToServices()">Ver Serviços</button>
         <button class="btn-outline" onclick="openPricelist()">Preçário</button>
-        <button class="btn-outline" onclick="openGalleryDialogV2()">Galeria V2</button>
+        <button class="btn-outline" onclick="openGalleryDialog()">Galeria </button>
       </div>
     </div>
     <div class="hero-logo-wrap">
@@ -1435,20 +1436,20 @@ dialog::backdrop {
     <div id="adminGalleryList"></div>
 
     <div style="margin-top:20px;">
-  <h3>📸 Galeria</h3>
+  
 
  
 </div>
    
 <div class="admin-gallery-section">
 
-  <h3>Galeria V2</h3>
+  <h3>Galeria</h3>
   <p>Gerir imagens da nova galeria (separada)</p>
 
-  <input type="file" id="galleryUploadV2" multiple accept="image/*">
+  <input type="file" id="galleryUpload" multiple accept="image/*">
 
-  <button type="button" onclick="addImageToGalleryV2()">
-    Adicionar imagens V2
+  <button type="button" onclick="addImageToGallery()">
+    Adicionar imagens 
   </button>
 
   <div id="adminGalleryListV2"></div>
@@ -1484,7 +1485,7 @@ dialog::backdrop {
     
 
   
- <div id="adminGalleryList"></div>
+ 
 
 
 
@@ -1724,14 +1725,14 @@ function closeGalleryLightbox(event){
   document.body.style.overflow = '';
 }
 
-// ===== NOVA GALERIA V2 =====
+// ===== NOVA GALERIA  =====
 let galleryImagesV2 = JSON.parse(localStorage.getItem('galleryImages_v2') || '[]');
 
 function getGalleryImagesV2(){
-  return Array.isArray(galleryImagesV2) ? galleryImagesV2 : [];
+  return Array.isArray(galleryImages) ? galleryImages : [];
 }
 
-function updateGalleryCountV2(){
+function updateGalleryCount(){
   const countEl = document.getElementById('galleryImageCountV2');
   if(!countEl) return;
 
@@ -1739,7 +1740,7 @@ function updateGalleryCountV2(){
   countEl.textContent = `${total} ${total === 1 ? 'publicação' : 'publicações'}`;
 }
 
-function loadGalleryV2() {
+function loadGallery() {
   const grid = document.getElementById('galleryDialogGridV2');
   if (!grid) return;
 
@@ -1747,7 +1748,7 @@ function loadGalleryV2() {
 
   if (!galleryImagesV2.length) {
     grid.innerHTML = '<p>Sem imagens na galeria.</p>';
-    updateGalleryCountV2();
+    updateGalleryCount();
     return;
   }
 
@@ -1767,36 +1768,36 @@ function loadGalleryV2() {
     `;
 
     post.addEventListener('click', () => {
-      openGalleryLightboxV2(src);
+      openGalleryLightbox(src);
     });
 
     grid.appendChild(post);
   });
 
-  updateGalleryCountV2();
+  updateGalleryCount();
 }
 
-function openGalleryDialogV2(){
-  const dialog = document.getElementById('galleryDialogV2');
+function openGalleryDialog(){
+  const dialog = document.getElementById('galleryDialog');
   if (!dialog) {
     alert('galleryDialogV2 não encontrado');
     return;
   }
 
-  loadGalleryV2();
+  loadGallery();
 
   if(typeof dialog.showModal === 'function'){
     dialog.showModal();
   }
 }
 
-function closeGalleryDialogV2(){
+function closeGalleryDialog(){
   const dialog = document.getElementById('galleryDialogV2');
   if (!dialog) return;
   dialog.close();
 }
 
-function openGalleryLightboxV2(src){
+function openGalleryLightbox(src){
   const lightbox = document.getElementById('galleryLightboxV2');
   const img = document.getElementById('galleryLightboxImgV2');
 
@@ -1819,7 +1820,7 @@ function openGalleryLightboxV2(src){
   document.body.style.overflow = 'hidden';
 }
 
-function closeGalleryLightboxV2(event){
+function closeGalleryLightbox(event){
   if(event){ event.stopPropagation(); }
 
   const lightbox = document.getElementById('galleryLightboxV2');
@@ -1864,8 +1865,8 @@ function addImageToGallery(){
   });
 }
 
-function addImageToGalleryV2(){
-  const input = document.getElementById('galleryUploadV2');
+function addImageToGallery(){
+  const input = document.getElementById('galleryUpload');
   const files = Array.from(input?.files || []);
 
   if(!files.length){
@@ -1884,10 +1885,10 @@ function addImageToGalleryV2(){
 
       if(processed === files.length){
         localStorage.setItem('galleryImages_v2', JSON.stringify(galleryImagesV2));
-        loadGalleryV2();
-        renderAdminGalleryV2();
+        loadGallery();
+        renderAdminGallery();
         input.value = '';
-        alert('Imagens adicionadas à Galeria V2 com sucesso!');
+        alert('Imagens adicionadas à Galeria com sucesso!');
       }
     };
 
@@ -1895,14 +1896,14 @@ function addImageToGalleryV2(){
   });
 }
 
-function renderAdminGalleryV2(){
-  const list = document.getElementById('adminGalleryListV2');
+function renderAdminGallery(){
+  const list = document.getElementById('adminGalleryList');
   if(!list) return;
 
   list.innerHTML = '';
 
   if(!galleryImagesV2.length){
-    list.innerHTML = '<p class="empty-bookings">Sem imagens na Galeria V2.</p>';
+    list.innerHTML = '<p class="empty-bookings">Sem imagens na Galeria.</p>';
     return;
   }
 
@@ -1912,7 +1913,7 @@ function renderAdminGalleryV2(){
 
     card.innerHTML = `
       <img src="${src}" alt="Imagem ${index + 1}">
-      <button type="button" class="admin-gallery-delete" onclick="removeGalleryImageV2(${index})">
+      <button type="button" class="admin-gallery-delete" onclick="removeGalleryImage(${index})">
         Remover
       </button>
     `;
@@ -1921,11 +1922,11 @@ function renderAdminGalleryV2(){
   });
 }
 
-function removeGalleryImageV2(index){
+function removeGalleryImage(index){
   galleryImagesV2.splice(index, 1);
   localStorage.setItem('galleryImages_v2', JSON.stringify(galleryImagesV2));
-  loadGalleryV2();
-  renderAdminGalleryV2();
+  loadGallery();
+  renderAdminGallery();
 }
 
 
@@ -2381,7 +2382,7 @@ async function loadBlocksFromSheet() {
   try {
    const r = await fetch(SHEETS_URL + '?action=getBlocks');
     const data = await r.json();
-    console.log('BLOCKS V2 RAW:', data); 
+    console.log('BLOCKS  RAW:', data); 
    
     if (!Array.isArray(data)) return [];
 
@@ -2413,7 +2414,7 @@ async function saveBlockToSheet(profissional, data, hora) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return;
 
   try {
-    console.log('ENTREI NA saveBlockToSheet V2', profissional, data, hora);
+    console.log('ENTREI NA saveBlockToSheet ', profissional, data, hora);
     const res = await fetch(SHEETS_URL, {
       method: "POST",
       headers: {
@@ -2439,7 +2440,7 @@ async function unlockBlockOnSheet(profissional, data, horas, rowIds) {
   if (!SHEETS_URL || SHEETS_URL.includes('COLE_AQUI')) return null;
 
   try {
-    console.log('A ENVIAR DESBLOQUEIO V2:', profissional, data, horas);
+    console.log('A ENVIAR DESBLOQUEIO :', profissional, data, horas);
     console.log('DEBUG HORAS STRING:', horas.join(':'));
     
     const res = await fetch(SHEETS_URL, {
@@ -4231,7 +4232,7 @@ document.addEventListener('keydown', e=>{
 
 
 
-<dialog id="galleryDialogV2" class="gallery-dialog">
+<dialog id="galleryDialog" class="gallery-dialog">
   <div class="gallery-shell">
 
     <div class="gallery-topbar">
@@ -4248,7 +4249,7 @@ document.addEventListener('keydown', e=>{
 
       </div>
 
-      <button type="button" class="gallery-close-btn" onclick="closeGalleryDialogV2()">×</button>
+      <button type="button" class="gallery-close-btn" onclick="closeGalleryDialog()">×</button>
     </div>
 
     <div class="gallery-body">
@@ -4256,11 +4257,11 @@ document.addEventListener('keydown', e=>{
         <h3>Momento Beauty Feed</h3>
       </div>
 
-      <div class="gallery-grid" id="galleryDialogGridV2"></div>
+      <div class="gallery-grid" id="galleryDialogGrid"></div>
 
-      <div id="galleryLightboxV2" class="gallery-lightbox" onclick="closeGalleryLightboxV2(event)">
-        <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightboxV2(event)">×</button>
-        <img id="galleryLightboxImgV2" src="" alt="Imagem ampliada da galeria">
+      <div id="galleryLightboxV2" class="gallery-lightbox" onclick="closeGalleryLightbox(event)">
+        <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox(event)">×</button>
+        <img id="galleryLightboxImg" src="" alt="Imagem ampliada da galeria">
         <div class="gallery-lightbox-watermark">MBe'auty</div>
       </div>
 
