@@ -1804,7 +1804,10 @@ function openGalleryDialog(){
   const overlay = document.getElementById('galleryOverlay');
   const panel = document.getElementById('galleryPanel');
 
-  if (!overlay || !panel) return;
+  if (!overlay || !panel) {
+  alert('Falta galleryOverlay ou galleryPanel');
+  return;
+}
 
   loadGallery();
 
