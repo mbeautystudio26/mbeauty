@@ -382,7 +382,11 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
   .admin-stats{grid-template-columns:repeat(2,1fr)}
   .booking-row{grid-template-columns:1fr 1fr}
   .footer-top{grid-template-columns:1fr}
-  .nav-links{display:none}
+  .nav-links{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
   .pricelist-grid{grid-template-columns:1fr}
 }
 @media(max-width:680px){
