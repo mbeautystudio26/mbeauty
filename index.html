@@ -382,62 +382,8 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
   .admin-stats{grid-template-columns:repeat(2,1fr)}
   .booking-row{grid-template-columns:1fr 1fr}
   .footer-top{grid-template-columns:1fr}
-  .nav-links{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-.hero-btns{
-  display:flex !important;
-  flex-direction:column !important;
-  gap:12px !important;
-}
-
-.hero-btns button{
-  display:block !important;
-  width:100% !important;
-}
-
-.hero{
-  display:block !important;
-}
-
-.hero-inner{
-  display:flex !important;
-  flex-direction:column !important;
-}
-
-}
- 
-
-
-nav{
-  height:auto;
-  padding:10px 5%;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:10px;
-}
-
-.nav-links{
-  width:100%;
-}
-
-.nav-links li{
-  display:block;
-}
-
-.nav-links a{
-  display:block;
-  font-size:.75rem;
-  padding:6px 0;
-}
-
-.nav-right{
-  width:100%;
-  justify-content:flex-start;
-}
-
-.pricelist-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .pricelist-grid{grid-template-columns:1fr}
 }
 @media(max-width:680px){
   .pricelist-grid{grid-template-columns:1fr}
@@ -461,33 +407,18 @@ nav{
 .pl-panel{position:fixed;inset:0;background:linear-gradient(145deg,#fde8f0 0%,#fdf7f9 50%,#fdf8ee 100%);z-index:10001;transform:translateY(100%);transition:transform .45s cubic-bezier(.22,.68,0,1.2);overflow-y:auto}
 .pl-panel.show{transform:translateY(0)}
 .gallery-overlay{
-  display:none;
   position:fixed;
   inset:0;
   background:rgba(44,21,32,.82);
   z-index:10000;
-  pointer-events:none;
-}
-
-.gallery-overlay.show{
-  display:block;
-  pointer-events:auto;
 }
 
 .gallery-panel{
   position:fixed;
   inset:0;
-  background:linear-gradient(145deg,#fde8f0,#fdf7f9,#fdf8ee);
+  background:linear-gradient(145deg,#fde8f0 0%,#fdf7f9 50%,#fdf8ee 100%);
   z-index:10001;
-  transform:translateY(100%);
-  transition:transform .3s ease;
   overflow-y:auto;
-  pointer-events:none;
-}
-
-.gallery-panel.show{
-  transform:translateY(0);
-  pointer-events:auto;
 }
 .pl-header{background:rgba(253,247,249,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(201,168,76,0.35);height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:5}
 .pl-brand{display:flex;align-items:center;gap:10px}
@@ -597,7 +528,7 @@ nav{
 .tab-photo-img{width:100%;border-radius:6px;object-fit:cover;aspect-ratio:4/3;display:block;box-shadow:0 4px 20px rgba(192,82,122,.15);transition:transform .3s}
 .tab-photo-img:hover{transform:scale(1.02)}
 @media(max-width:900px){.tab-with-photos{grid-template-columns:1fr}.tab-photos-col{flex-direction:row;position:static}.tab-photo-img{aspect-ratio:1/1;flex:1}}
-
+@media(max-width:600px){.tab-photos-col{display:none}}
 
 /* FOOTER LEGAL ICONS */
 .footer-legal-icons{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -681,7 +612,8 @@ dialog::backdrop {
   margin-bottom: 24px;
 }
 
-#adminGalleryList{
+#adminGalleryList,
+#adminGalleryListV2{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 14px;
@@ -947,92 +879,6 @@ dialog::backdrop {
   pointer-events: none;
 }
 
-@media (max-width: 600px) {
-  .gallery-grid {
-    grid-template-columns: 1fr !important;
-    gap: 12px;
-  }
-
-  .gallery-post {
-    width: 100%;
-  }
-
-  .gallery-dialog {
-    width: 95vw !important;
-    max-width: 95vw !important;
-  }
-}
-
-@media (max-width: 768px) {
-  #galleryDialog {
-    width: 96vw !important;
-    max-width: 96vw !important;
-    height: 92vh !important;
-    max-height: 92vh !important;
-    padding: 0 !important;
-    border: none;
-  }
-
-  .gallery-shell {
-    min-height: 92vh !important;
-  }
-
-  .gallery-body {
-    padding: 12px !important;
-  }
-
-  .gallery-grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-  }
-
-  .gallery-post {
-    width: 100% !important;
-  }
-}
-
-
-@media (max-width: 768px) {
-
-  .hero-btns{
-    display:flex !important;
-    flex-direction:column !important;
-    gap:12px !important;
-  }
-
-  .hero-btns button{
-    display:block !important;
-    width:100% !important;
-  }
-
-}
-
-.gallery-overlay{
-  display:none;
-}
-
-.gallery-overlay.show{
-  display:block;
-}
-
-.gallery-panel{
-  position:fixed;
-  inset:0;
-  background:linear-gradient(145deg,#fde8f0,#fdf7f9,#fdf8ee);
-  z-index:10001;
-  transform:translateY(100%);
-  transition:transform .3s ease;
-  overflow-y:auto;
-}
-
-.gallery-panel.show{
-  transform:translateY(0);
-}
-
-
-
-
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
@@ -1051,7 +897,6 @@ dialog::backdrop {
     <li><a href="#inicio">Início</a></li>
     <li><a href="javascript:void(0)" onclick="openPricelist()">Preçário</a></li>
     <li><a href="#servicos">Serviços</a></li>
-    <li><a href="#" onclick="openGalleryDialog(); return false;">Galeria</a></li>
     <li><a href="#marcacoes">Marcações</a></li>
     <li><a href="#contacto">Contacto</a></li>
     </ul>
@@ -1075,11 +920,11 @@ dialog::backdrop {
       </h1>
       <p class="hero-desc">Num espaço pensado inteiramente para si, onde cada detalhe é cuidado com amor e dedicação. Agende o seu momento de mimo.</p>
       <div class="hero-btns">
-  <button class="btn-rose" onclick="scrollToBooking()">Agendar Serviço</button>
-  <button class="btn-outline" onclick="scrollToServices()">Ver Serviços</button>
-  <button class="btn-outline" onclick="openPricelist()">Preçário</button>
-  <button class="btn-outline" onclick="openGalleryDialog()">Galeria</button>
-</div>
+        <button class="btn-rose" onclick="scrollToBooking()">Agendar Serviço</button>
+        <button class="btn-outline" onclick="scrollToServices()">Ver Serviços</button>
+        <button class="btn-outline" onclick="openPricelist()">Preçário</button>
+        <button class="btn-outline" onclick="openGalleryDialogV2()">Galeria V2</button>
+      </div>
     </div>
     <div class="hero-logo-wrap">
       <div class="hero-logo-ring">
@@ -1592,10 +1437,24 @@ dialog::backdrop {
     <div style="margin-top:20px;">
   <h3>📸 Galeria</h3>
 
-  <input type="file" id="galleryUpload" accept="image/*" multiple>
-  <button onclick="addImageToGallery()">Adicionar imagem</button>
+ 
 </div>
-    
+   
+<div class="admin-gallery-section">
+
+  <h3>Galeria V2</h3>
+  <p>Gerir imagens da nova galeria (separada)</p>
+
+  <input type="file" id="galleryUploadV2" multiple accept="image/*">
+
+  <button type="button" onclick="addImageToGalleryV2()">
+    Adicionar imagens V2
+  </button>
+
+  <div id="adminGalleryListV2"></div>
+
+</div> 
+
       <div class="admin-welcome">
       <h2>Bem-vinda, <em id="adminWelcomeName" style="font-style:italic;color:var(--rose-deep)">Bete</em> ✨</h2>
       <p>Aqui pode gerir todas as marcações e configurações do estúdio</p>
@@ -1814,36 +1673,22 @@ function loadGallery() {
 }
 
 function openGalleryDialog(){
-  const overlay = document.getElementById('galleryOverlay');
-  const panel = document.getElementById('galleryPanel');
-
-  if (!overlay || !panel) {
-    alert('faltam elementos da galeria');
+  const dialog = document.getElementById('galleryDialog');
+  if (!dialog) {
+    alert('galleryDialog não encontrado');
     return;
   }
 
-  alert('entrou na função');
-
   loadGallery();
-
-  overlay.classList.add('show');
-  panel.classList.add('show');
-
-  alert('adicionou show');
-
-  document.body.style.overflow = 'hidden';
+  if(typeof dialog.showModal === 'function'){
+    dialog.showModal();
+  }
 }
 
 function closeGalleryDialog(){
-  const overlay = document.getElementById('galleryOverlay');
-  const panel = document.getElementById('galleryPanel');
-
-  if (!overlay || !panel) return;
-
-  overlay.classList.remove('show');
-  panel.classList.remove('show');
-
-  document.body.style.overflow = '';
+  const dialog = document.getElementById('galleryDialog');
+  if (!dialog) return;
+  dialog.close();
 }
 
 function openGalleryLightbox(src){
@@ -1879,6 +1724,117 @@ function closeGalleryLightbox(event){
   document.body.style.overflow = '';
 }
 
+// ===== NOVA GALERIA V2 =====
+let galleryImagesV2 = JSON.parse(localStorage.getItem('galleryImages_v2') || '[]');
+
+function getGalleryImagesV2(){
+  return Array.isArray(galleryImagesV2) ? galleryImagesV2 : [];
+}
+
+function updateGalleryCountV2(){
+  const countEl = document.getElementById('galleryImageCountV2');
+  if(!countEl) return;
+
+  const total = getGalleryImagesV2().length;
+  countEl.textContent = `${total} ${total === 1 ? 'publicação' : 'publicações'}`;
+}
+
+function loadGalleryV2() {
+  const grid = document.getElementById('galleryDialogGridV2');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+
+  if (!galleryImagesV2.length) {
+    grid.innerHTML = '<p>Sem imagens na galeria.</p>';
+    updateGalleryCountV2();
+    return;
+  }
+
+  galleryImagesV2.forEach((src, index) => {
+    const post = document.createElement('article');
+    post.className = 'gallery-post';
+
+    post.innerHTML = `
+      <div class="gallery-post-media">
+        <span class="gallery-watermark">MBe'auty</span>
+        <img src="${src}" alt="Trabalho ${index + 1} da galeria" loading="lazy">
+        <div class="gallery-post-overlay">
+          <span class="gallery-stat">♡ Destaque</span>
+          <span class="gallery-stat">Ver</span>
+        </div>
+      </div>
+    `;
+
+    post.addEventListener('click', () => {
+      openGalleryLightboxV2(src);
+    });
+
+    grid.appendChild(post);
+  });
+
+  updateGalleryCountV2();
+}
+
+function openGalleryDialogV2(){
+  const dialog = document.getElementById('galleryDialogV2');
+  if (!dialog) {
+    alert('galleryDialogV2 não encontrado');
+    return;
+  }
+
+  loadGalleryV2();
+
+  if(typeof dialog.showModal === 'function'){
+    dialog.showModal();
+  }
+}
+
+function closeGalleryDialogV2(){
+  const dialog = document.getElementById('galleryDialogV2');
+  if (!dialog) return;
+  dialog.close();
+}
+
+function openGalleryLightboxV2(src){
+  const lightbox = document.getElementById('galleryLightboxV2');
+  const img = document.getElementById('galleryLightboxImgV2');
+
+  if(!lightbox || !img) return;
+
+  img.src = src;
+
+  lightbox.style.display = 'flex';
+  lightbox.style.position = 'fixed';
+  lightbox.style.inset = '0';
+  lightbox.style.background = 'rgba(0,0,0,0.92)';
+  lightbox.style.alignItems = 'center';
+  lightbox.style.justifyContent = 'center';
+  lightbox.style.zIndex = '99999';
+
+  img.style.maxWidth = '92%';
+  img.style.maxHeight = '92%';
+  img.style.objectFit = 'contain';
+
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGalleryLightboxV2(event){
+  if(event){ event.stopPropagation(); }
+
+  const lightbox = document.getElementById('galleryLightboxV2');
+  const img = document.getElementById('galleryLightboxImgV2');
+
+  if(!lightbox || !img) return;
+
+  lightbox.style.display = 'none';
+  img.src = '';
+  document.body.style.overflow = '';
+}
+
+
+
+
 function addImageToGallery(){
   const input = document.getElementById('galleryUpload');
   const files = Array.from(input?.files || []);
@@ -1907,6 +1863,79 @@ function addImageToGallery(){
     reader.readAsDataURL(file);
   });
 }
+
+function addImageToGalleryV2(){
+  const input = document.getElementById('galleryUploadV2');
+  const files = Array.from(input?.files || []);
+
+  if(!files.length){
+    alert('Escolhe pelo menos uma imagem');
+    return;
+  }
+
+  let processed = 0;
+
+  files.forEach(file => {
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+      galleryImagesV2.push(e.target.result);
+      processed += 1;
+
+      if(processed === files.length){
+        localStorage.setItem('galleryImages_v2', JSON.stringify(galleryImagesV2));
+        loadGalleryV2();
+        renderAdminGalleryV2();
+        input.value = '';
+        alert('Imagens adicionadas à Galeria V2 com sucesso!');
+      }
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderAdminGalleryV2(){
+  const list = document.getElementById('adminGalleryListV2');
+  if(!list) return;
+
+  list.innerHTML = '';
+
+  if(!galleryImagesV2.length){
+    list.innerHTML = '<p class="empty-bookings">Sem imagens na Galeria V2.</p>';
+    return;
+  }
+
+  galleryImagesV2.forEach((src, index) => {
+    const card = document.createElement('div');
+    card.className = 'admin-gallery-card';
+
+    card.innerHTML = `
+      <img src="${src}" alt="Imagem ${index + 1}">
+      <button type="button" class="admin-gallery-delete" onclick="removeGalleryImageV2(${index})">
+        Remover
+      </button>
+    `;
+
+    list.appendChild(card);
+  });
+}
+
+function removeGalleryImageV2(index){
+  galleryImagesV2.splice(index, 1);
+  localStorage.setItem('galleryImages_v2', JSON.stringify(galleryImagesV2));
+  loadGalleryV2();
+  renderAdminGalleryV2();
+}
+
+
+
+
+
+
+
+
+
 
 function removeImageFromGallery(index){
   const confirmar = confirm('Tens a certeza que queres apagar esta imagem?');
@@ -4200,25 +4229,46 @@ document.addEventListener('keydown', e=>{
 
 </dialog>
 
-<div id="galleryOverlay" class="gallery-overlay" onclick="closeGalleryDialog()"></div>
 
-<div id="galleryPanel" class="gallery-panel">
-  <button class="pl-zoom-close" onclick="closeGalleryDialog()">×</button>
 
-  <div class="gallery-body">
-    <div class="gallery-intro">
-      <h3>Momento Beauty Feed</h3>
+<dialog id="galleryDialogV2" class="gallery-dialog">
+  <div class="gallery-shell">
+
+    <div class="gallery-topbar">
+      <div class="gallery-topbar-left">
+
+        <div class="gallery-avatar" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--rose-deep),var(--gold));">
+        </div>
+
+        <div class="gallery-title-wrap">
+          <div class="gallery-title-main">Galeria</div>
+          <div class="gallery-title-sub">MBe'auty Studio</div>
+          <div class="gallery-meta" id="galleryImageCountV2">0 publicações</div>
+        </div>
+
+      </div>
+
+      <button type="button" class="gallery-close-btn" onclick="closeGalleryDialogV2()">×</button>
     </div>
 
-    <div class="gallery-grid" id="galleryDialogGrid"></div>
+    <div class="gallery-body">
+      <div class="gallery-intro">
+        <h3>Momento Beauty Feed</h3>
+      </div>
 
-    <div id="galleryLightbox" class="gallery-lightbox" onclick="closeGalleryLightbox(event)">
-      <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox(event)">×</button>
-      <img id="galleryLightboxImg" src="" alt="Imagem ampliada da galeria">
-      <div class="gallery-lightbox-watermark">MBe'auty</div>
+      <div class="gallery-grid" id="galleryDialogGridV2"></div>
+
+      <div id="galleryLightboxV2" class="gallery-lightbox" onclick="closeGalleryLightboxV2(event)">
+        <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightboxV2(event)">×</button>
+        <img id="galleryLightboxImgV2" src="" alt="Imagem ampliada da galeria">
+        <div class="gallery-lightbox-watermark">MBe'auty</div>
+      </div>
+
     </div>
+
   </div>
-</div>
+</dialog>
+
 
 
 
