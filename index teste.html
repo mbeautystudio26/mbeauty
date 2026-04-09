@@ -998,7 +998,27 @@ dialog::backdrop {
 
 }
 
+.gallery-overlay{
+  display:none;
+}
 
+.gallery-overlay.show{
+  display:block;
+}
+
+.gallery-panel{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(145deg,#fde8f0,#fdf7f9,#fdf8ee);
+  z-index:10001;
+  transform:translateY(100%);
+  transition:transform .3s ease;
+  overflow-y:auto;
+}
+
+.gallery-panel.show{
+  transform:translateY(0);
+}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -1781,34 +1801,27 @@ function loadGallery() {
 }
 
 function openGalleryDialog(){
-  const dialog = document.getElementById('galleryDialog');
-  if (!dialog) {
-    alert('galleryDialog não encontrado');
-    return;
-  }
+  const overlay = document.getElementById('galleryOverlay');
+  const panel = document.getElementById('galleryPanel');
+
+  if (!overlay || !panel) return;
 
   loadGallery();
 
-  if (typeof dialog.showModal === 'function') {
-    dialog.showModal();
-  } else {
-    dialog.setAttribute('open', 'open');
-    dialog.style.display = 'block';
-  }
+  overlay.classList.add('show');
+  panel.classList.add('show');
 
   document.body.style.overflow = 'hidden';
 }
 
 function closeGalleryDialog(){
-  const dialog = document.getElementById('galleryDialog');
-  if (!dialog) return;
+  const overlay = document.getElementById('galleryOverlay');
+  const panel = document.getElementById('galleryPanel');
 
-  if (typeof dialog.close === 'function') {
-    dialog.close();
-  } else {
-    dialog.removeAttribute('open');
-    dialog.style.display = 'none';
-  }
+  if (!overlay || !panel) return;
+
+  overlay.classList.remove('show');
+  panel.classList.remove('show');
 
   document.body.style.overflow = '';
 }
@@ -4167,35 +4180,25 @@ document.addEventListener('keydown', e=>{
 
 </dialog>
 
-<dialog id="galleryDialog" class="gallery-dialog" style="z-index: 1;">
-  <div class="gallery-shell">
-    <div class="gallery-topbar">
-      <div class="gallery-topbar-left">
-        <div class="gallery-avatar" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--rose-deep),var(--gold));color:white;font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;">MB</div>
-        <div class="gallery-title-wrap">
-          <div class="gallery-title-main">Galeria</div>
-          <div class="gallery-title-sub">MBe'auty Studio</div>
-          <div class="gallery-meta" id="galleryImageCount">0 publicações</div>
-        </div>
-      </div>
-      <button type="button" class="gallery-close-btn" onclick="closeGalleryDialog()">×</button>
+<div id="galleryOverlay" class="gallery-overlay" onclick="closeGalleryDialog()"></div>
+
+<div id="galleryPanel" class="gallery-panel">
+  <button class="pl-zoom-close" onclick="closeGalleryDialog()">×</button>
+
+  <div class="gallery-body">
+    <div class="gallery-intro">
+      <h3>Momento Beauty Feed</h3>
     </div>
 
-    <div class="gallery-body">
-      <div class="gallery-intro">
-        <h3>Momento Beauty Feed</h3>
+    <div class="gallery-grid" id="galleryDialogGrid"></div>
 
-      </div>
-      <div class="gallery-grid" id="galleryDialogGrid"></div>
-      <div id="galleryLightbox" class="gallery-lightbox" onclick="closeGalleryLightbox(event)">
-  <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox(event)">x</button>
-  <img id="galleryLightboxImg" src="" alt="Imagem ampliada da galeria">
-   <div class="gallery-lightbox-watermark">MBe'auty</div>
-</div>
-    
+    <div id="galleryLightbox" class="gallery-lightbox" onclick="closeGalleryLightbox(event)">
+      <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox(event)">×</button>
+      <img id="galleryLightboxImg" src="" alt="Imagem ampliada da galeria">
+      <div class="gallery-lightbox-watermark">MBe'auty</div>
     </div>
   </div>
-</dialog>
+</div>
 
 
 
