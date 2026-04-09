@@ -878,6 +878,24 @@ dialog::backdrop {
   pointer-events: none;
 }
 
+@media (max-width: 600px) {
+  .gallery-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .gallery-post {
+    width: 100%;
+  }
+
+  .gallery-dialog {
+    width: 95vw !important;
+    max-width: 95vw !important;
+  }
+}
+
+
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
