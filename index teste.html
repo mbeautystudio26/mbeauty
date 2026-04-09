@@ -387,7 +387,35 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
   gap:12px;
   flex-wrap:wrap;
 }
-  .pricelist-grid{grid-template-columns:1fr}
+  
+nav{
+  height:auto;
+  padding:10px 5%;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.nav-links{
+  width:100%;
+}
+
+.nav-links li{
+  display:block;
+}
+
+.nav-links a{
+  display:block;
+  font-size:.75rem;
+  padding:6px 0;
+}
+
+.nav-right{
+  width:100%;
+  justify-content:flex-start;
+}
+
+.pricelist-grid{grid-template-columns:1fr}
 }
 @media(max-width:680px){
   .pricelist-grid{grid-template-columns:1fr}
