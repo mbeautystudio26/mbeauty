@@ -1020,6 +1020,21 @@ dialog::backdrop {
   transform:translateY(0);
 }
 
+
+#testeGaleriaMobile{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999999;
+  background: #c0527a;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
@@ -4204,6 +4219,6 @@ document.addEventListener('keydown', e=>{
 </div>
 
 
-
+<button id="testeGaleriaMobile" onclick="openGalleryDialog()">Galeria</button>
 </body>
 </html>
