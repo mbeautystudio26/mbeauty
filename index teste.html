@@ -439,10 +439,15 @@ nav{
 .pl-panel{position:fixed;inset:0;background:linear-gradient(145deg,#fde8f0 0%,#fdf7f9 50%,#fdf8ee 100%);z-index:10001;transform:translateY(100%);transition:transform .45s cubic-bezier(.22,.68,0,1.2);overflow-y:auto}
 .pl-panel.show{transform:translateY(0)}
 .gallery-overlay{
+  display:none;
   position:fixed;
   inset:0;
-  background:rgba(44,21,32,.82);
+  background: rgba(44,21,32,.82);
   z-index:10000;
+}
+
+.gallery-overlay.show{
+  display:block;
 }
 
 .gallery-panel{
@@ -970,8 +975,6 @@ dialog::backdrop {
   }
 
 }
-
-
 
 
 
