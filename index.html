@@ -382,8 +382,62 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
   .admin-stats{grid-template-columns:repeat(2,1fr)}
   .booking-row{grid-template-columns:1fr 1fr}
   .footer-top{grid-template-columns:1fr}
-  .nav-links{display:none}
-  .pricelist-grid{grid-template-columns:1fr}
+  .nav-links{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+.hero-btns{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:12px !important;
+}
+
+.hero-btns button{
+  display:block !important;
+  width:100% !important;
+}
+
+.hero{
+  display:block !important;
+}
+
+.hero-inner{
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+}
+ 
+
+
+nav{
+  height:auto;
+  padding:10px 5%;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.nav-links{
+  width:100%;
+}
+
+.nav-links li{
+  display:block;
+}
+
+.nav-links a{
+  display:block;
+  font-size:.75rem;
+  padding:6px 0;
+}
+
+.nav-right{
+  width:100%;
+  justify-content:flex-start;
+}
+
+.pricelist-grid{grid-template-columns:1fr}
 }
 @media(max-width:680px){
   .pricelist-grid{grid-template-columns:1fr}
@@ -407,10 +461,15 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
 .pl-panel{position:fixed;inset:0;background:linear-gradient(145deg,#fde8f0 0%,#fdf7f9 50%,#fdf8ee 100%);z-index:10001;transform:translateY(100%);transition:transform .45s cubic-bezier(.22,.68,0,1.2);overflow-y:auto}
 .pl-panel.show{transform:translateY(0)}
 .gallery-overlay{
+  display:none;
   position:fixed;
   inset:0;
-  background:rgba(44,21,32,.82);
+  background: rgba(44,21,32,.82);
   z-index:10000;
+}
+
+.gallery-overlay.show{
+  display:block;
 }
 
 .gallery-panel{
@@ -528,7 +587,7 @@ footer{background:var(--charcoal);color:rgba(253,247,249,.75);padding:56px 5% 28
 .tab-photo-img{width:100%;border-radius:6px;object-fit:cover;aspect-ratio:4/3;display:block;box-shadow:0 4px 20px rgba(192,82,122,.15);transition:transform .3s}
 .tab-photo-img:hover{transform:scale(1.02)}
 @media(max-width:900px){.tab-with-photos{grid-template-columns:1fr}.tab-photos-col{flex-direction:row;position:static}.tab-photo-img{aspect-ratio:1/1;flex:1}}
-@media(max-width:600px){.tab-photos-col{display:none}}
+
 
 /* FOOTER LEGAL ICONS */
 .footer-legal-icons{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -878,6 +937,104 @@ dialog::backdrop {
   pointer-events: none;
 }
 
+@media (max-width: 600px) {
+  .gallery-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .gallery-post {
+    width: 100%;
+  }
+
+  .gallery-dialog {
+    width: 95vw !important;
+    max-width: 95vw !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #galleryDialog {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    height: 92vh !important;
+    max-height: 92vh !important;
+    padding: 0 !important;
+    border: none;
+  }
+
+  .gallery-shell {
+    min-height: 92vh !important;
+  }
+
+  .gallery-body {
+    padding: 12px !important;
+  }
+
+  .gallery-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .gallery-post {
+    width: 100% !important;
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  .hero-btns{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:12px !important;
+  }
+
+  .hero-btns button{
+    display:block !important;
+    width:100% !important;
+  }
+
+}
+
+.gallery-overlay{
+  display:none;
+}
+
+.gallery-overlay.show{
+  display:block;
+}
+
+.gallery-panel{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(145deg,#fde8f0,#fdf7f9,#fdf8ee);
+  z-index:10001;
+  transform:translateY(100%);
+  transition:transform .3s ease;
+  overflow-y:auto;
+}
+
+.gallery-panel.show{
+  transform:translateY(0);
+}
+
+
+#testeGaleriaMobile{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999999;
+  background: #c0527a;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
@@ -896,7 +1053,7 @@ dialog::backdrop {
     <li><a href="#inicio">Início</a></li>
     <li><a href="javascript:void(0)" onclick="openPricelist()">Preçário</a></li>
     <li><a href="#servicos">Serviços</a></li>
-    <li><a href="#" onclick="openGalleryDialog(); return false;">Galeria</a></li>
+    <li><a href="#" onclick="alert('clicou'); openGalleryDialog(); return false;">Galeria</a></li>
     <li><a href="#marcacoes">Marcações</a></li>
     <li><a href="#contacto">Contacto</a></li>
     </ul>
@@ -920,10 +1077,11 @@ dialog::backdrop {
       </h1>
       <p class="hero-desc">Num espaço pensado inteiramente para si, onde cada detalhe é cuidado com amor e dedicação. Agende o seu momento de mimo.</p>
       <div class="hero-btns">
-        <button class="btn-rose" onclick="scrollToBooking()">Agendar Serviço</button>
-        <button class="btn-outline" onclick="scrollToServices()">Ver Serviços</button>
-        <button class="btn-outline" onclick="openPricelist()">Preçário</button>
-      </div>
+  <button class="btn-rose" onclick="scrollToBooking()">Agendar Serviço</button>
+  <button class="btn-outline" onclick="scrollToServices()">Ver Serviços</button>
+  <button class="btn-outline" onclick="openPricelist()">Preçário</button>
+  <button class="btn-outline" onclick="openGalleryDialog()">Galeria</button>
+</div>
     </div>
     <div class="hero-logo-wrap">
       <div class="hero-logo-ring">
@@ -1658,22 +1816,32 @@ function loadGallery() {
 }
 
 function openGalleryDialog(){
-  const dialog = document.getElementById('galleryDialog');
-  if (!dialog) {
-    alert('galleryDialog não encontrado');
-    return;
-  }
+  const overlay = document.getElementById('galleryOverlay');
+  const panel = document.getElementById('galleryPanel');
+
+  if (!overlay || !panel) {
+  alert('Falta galleryOverlay ou galleryPanel');
+  return;
+}
 
   loadGallery();
-  if(typeof dialog.showModal === 'function'){
-    dialog.showModal();
-  }
+
+  overlay.classList.add('show');
+  panel.classList.add('show');
+
+  document.body.style.overflow = 'hidden';
 }
 
 function closeGalleryDialog(){
-  const dialog = document.getElementById('galleryDialog');
-  if (!dialog) return;
-  dialog.close();
+  const overlay = document.getElementById('galleryOverlay');
+  const panel = document.getElementById('galleryPanel');
+
+  if (!overlay || !panel) return;
+
+  overlay.classList.remove('show');
+  panel.classList.remove('show');
+
+  document.body.style.overflow = '';
 }
 
 function openGalleryLightbox(src){
@@ -4030,37 +4198,27 @@ document.addEventListener('keydown', e=>{
 
 </dialog>
 
-<dialog id="galleryDialog" class="gallery-dialog" style="z-index: 1;">
-  <div class="gallery-shell">
-    <div class="gallery-topbar">
-      <div class="gallery-topbar-left">
-        <div class="gallery-avatar" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--rose-deep),var(--gold));color:white;font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;">MB</div>
-        <div class="gallery-title-wrap">
-          <div class="gallery-title-main">Galeria</div>
-          <div class="gallery-title-sub">MBe'auty Studio</div>
-          <div class="gallery-meta" id="galleryImageCount">0 publicações</div>
-        </div>
-      </div>
-      <button type="button" class="gallery-close-btn" onclick="closeGalleryDialog()">×</button>
+<div id="galleryOverlay" class="gallery-overlay" onclick="closeGalleryDialog()"></div>
+
+<div id="galleryPanel" class="gallery-panel">
+  <button class="pl-zoom-close" onclick="closeGalleryDialog()">×</button>
+
+  <div class="gallery-body">
+    <div class="gallery-intro">
+      <h3>Momento Beauty Feed</h3>
     </div>
 
-    <div class="gallery-body">
-      <div class="gallery-intro">
-        <h3>Momento Beauty Feed</h3>
+    <div class="gallery-grid" id="galleryDialogGrid"></div>
 
-      </div>
-      <div class="gallery-grid" id="galleryDialogGrid"></div>
-      <div id="galleryLightbox" class="gallery-lightbox" onclick="closeGalleryLightbox(event)">
-  <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox(event)">x</button>
-  <img id="galleryLightboxImg" src="" alt="Imagem ampliada da galeria">
-   <div class="gallery-lightbox-watermark">MBe'auty</div>
-</div>
-    
+    <div id="galleryLightbox" class="gallery-lightbox" onclick="closeGalleryLightbox(event)">
+      <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox(event)">×</button>
+      <img id="galleryLightboxImg" src="" alt="Imagem ampliada da galeria">
+      <div class="gallery-lightbox-watermark">MBe'auty</div>
     </div>
   </div>
-</dialog>
+</div>
 
 
-
+<button id="testeGaleriaMobile" onclick="openGalleryDialog()">Galeria</button>
 </body>
 </html>
