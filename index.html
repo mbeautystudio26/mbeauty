@@ -1021,19 +1021,7 @@ dialog::backdrop {
 }
 
 
-#testeGaleriaMobile{
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 999999;
-  background: #c0527a;
-  color: white;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 999px;
-  font-size: 14px;
-  cursor: pointer;
-}
+
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -1053,7 +1041,7 @@ dialog::backdrop {
     <li><a href="#inicio">Início</a></li>
     <li><a href="javascript:void(0)" onclick="openPricelist()">Preçário</a></li>
     <li><a href="#servicos">Serviços</a></li>
-    <li><a href="#" onclick="alert('clicou'); openGalleryDialog(); return false;">Galeria</a></li>
+    onclick="openGalleryDialog(); return false;"
     <li><a href="#marcacoes">Marcações</a></li>
     <li><a href="#contacto">Contacto</a></li>
     </ul>
@@ -4219,6 +4207,6 @@ document.addEventListener('keydown', e=>{
 </div>
 
 
-<button id="testeGaleriaMobile" onclick="openGalleryDialog()">Galeria</button>
+
 </body>
 </html>
