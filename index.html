@@ -1726,22 +1726,22 @@ function closeGalleryLightbox(event){
 }
 
 // ===== NOVA GALERIA  =====
-let galleryImagesV2 = JSON.parse(localStorage.getItem('galleryImages_v2') || '[]');
+let galleryImagesV2 = JSON.parse(localStorage.getItem('galleryImages') || '[]');
 
 function getGalleryImagesV2(){
   return Array.isArray(galleryImages) ? galleryImages : [];
 }
 
 function updateGalleryCount(){
-  const countEl = document.getElementById('galleryImageCountV2');
+  const countEl = document.getElementById('galleryImageCount');
   if(!countEl) return;
 
-  const total = getGalleryImagesV2().length;
+  const total = getGalleryImages().length;
   countEl.textContent = `${total} ${total === 1 ? 'publicação' : 'publicações'}`;
 }
 
 function loadGallery() {
-  const grid = document.getElementById('galleryDialogGridV2');
+  const grid = document.getElementById('galleryDialogGrid');
   if (!grid) return;
 
   grid.innerHTML = '';
@@ -1780,7 +1780,6 @@ function loadGallery() {
 function openGalleryDialog(){
   const dialog = document.getElementById('galleryDialog');
   if (!dialog) {
-    alert('galleryDialogV2 não encontrado');
     return;
   }
 
@@ -1792,14 +1791,14 @@ function openGalleryDialog(){
 }
 
 function closeGalleryDialog(){
-  const dialog = document.getElementById('galleryDialogV2');
+  const dialog = document.getElementById('galleryDialog');
   if (!dialog) return;
   dialog.close();
 }
 
 function openGalleryLightbox(src){
-  const lightbox = document.getElementById('galleryLightboxV2');
-  const img = document.getElementById('galleryLightboxImgV2');
+  const lightbox = document.getElementById('galleryLightbox');
+  const img = document.getElementById('galleryLightboxImg');
 
   if(!lightbox || !img) return;
 
@@ -1880,11 +1879,11 @@ function addImageToGallery(){
     const reader = new FileReader();
 
     reader.onload = function(e){
-      galleryImagesV2.push(e.target.result);
+      galleryImages.push(e.target.result);
       processed += 1;
 
       if(processed === files.length){
-        localStorage.setItem('galleryImages_v2', JSON.stringify(galleryImagesV2));
+        localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
         loadGallery();
         renderAdminGallery();
         input.value = '';
@@ -1924,7 +1923,7 @@ function renderAdminGallery(){
 
 function removeGalleryImage(index){
   galleryImagesV2.splice(index, 1);
-  localStorage.setItem('galleryImages_v2', JSON.stringify(galleryImagesV2));
+  localStorage.setItem('galleryImages_', JSON.stringify(galleryImages));
   loadGallery();
   renderAdminGallery();
 }
@@ -4237,19 +4236,16 @@ document.addEventListener('keydown', e=>{
 
     <div class="gallery-topbar">
       <div class="gallery-topbar-left">
-
-        <div class="gallery-avatar" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--rose-deep),var(--gold));">
-        </div>
+        <div class="gallery-avatar"></div>
 
         <div class="gallery-title-wrap">
           <div class="gallery-title-main">Galeria</div>
           <div class="gallery-title-sub">MBe'auty Studio</div>
-          <div class="gallery-meta" id="galleryImageCountV2">0 publicações</div>
+          <div class="gallery-meta" id="galleryImageCount">0 publicações</div>
         </div>
-
       </div>
 
-      <button type="button" class="gallery-close-btn" onclick="closeGalleryDialog()">×</button>
+      <button type="button" class="gallery-close-btn" onclick="closeGalleryDialog()">x</button>
     </div>
 
     <div class="gallery-body">
@@ -4259,12 +4255,11 @@ document.addEventListener('keydown', e=>{
 
       <div class="gallery-grid" id="galleryDialogGrid"></div>
 
-      <div id="galleryLightboxV2" class="gallery-lightbox" onclick="closeGalleryLightbox(event)">
+      <div id="galleryLightbox" class="gallery-lightbox" onclick="closeGalleryLightbox(event)">
         <button type="button" class="gallery-lightbox-close" onclick="closeGalleryLightbox(event)">×</button>
         <img id="galleryLightboxImg" src="" alt="Imagem ampliada da galeria">
         <div class="gallery-lightbox-watermark">MBe'auty</div>
       </div>
-
     </div>
 
   </div>
