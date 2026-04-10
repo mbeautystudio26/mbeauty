@@ -1709,15 +1709,18 @@ function updateGalleryCount(){
 async function fetchGalleryFromSupabase() {
   const { data, error } = await supabaseClient
     .storage
-    .from('GALERIA')
+    .from('galeria')
     .list('', {
       limit: 100,
       offset: 0,
       sortBy: { column: 'name', order: 'desc' }
     });
 
+  console.log('LIST DATA:', data);
+  console.log('LIST ERROR:', error);
+
   if (error) {
-    console.error('Erro ao listar imagens do Supabase:', error);
+    console.error('Erro ao listar imagens:', error);
     return;
   }
 
@@ -1726,11 +1729,13 @@ async function fetchGalleryFromSupabase() {
     .map(file => {
       const { data: publicUrlData } = supabaseClient
         .storage
-        .from('GALERIA')
+        .from('galeria')
         .getPublicUrl(file.name);
 
       return publicUrlData.publicUrl;
     });
+
+  console.log('GALLERY IMAGES:', galleryImages);
 
   localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
 }
