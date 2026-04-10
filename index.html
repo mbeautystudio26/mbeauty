@@ -1645,47 +1645,6 @@ function getGalleryImages(){
   return Array.isArray(galleryImages) ? galleryImages : [];
 }
 
-function updateGalleryCount(){
-  const countEl = document.getElementById('galleryImageCount');
-  if(!countEl) return;
-  const total = getGalleryImages().length;
-  countEl.textContent = `${total} ${total === 1 ? 'publicação' : 'publicações'}`;
-}
-  
-function loadGallery() {
-  const grid = document.getElementById('galleryDialogGrid');
-  if (!grid) return;
-
-  grid.innerHTML = '';
-
-  if (!galleryImages.length) {
-    grid.innerHTML = '<p>Sem imagens na galeria.</p>';
-    return;
-  }
-
-  galleryImages.forEach((src, index) => {
-    const post = document.createElement('article');
-    post.className = 'gallery-post';
-
-    post.innerHTML = `
-      <div class="gallery-post-media">
-        <span class="gallery-watermark">MBe'auty</span>
-        <img src="${src}" alt="Trabalho ${index + 1} da galeria" loading="lazy">
-        <div class="gallery-post-overlay">
-          <span class="gallery-stat">♡ Destaque</span>
-          <span class="gallery-stat">Ver</span>
-        </div>
-      </div>
-    `;
-
-    post.addEventListener('click', () => {
-  openGalleryLightbox(src);
-});
-
-    grid.appendChild(post);
-  });
-}
-
 function openGalleryDialog(){
   const dialog = document.getElementById('galleryDialog');
   if (!dialog) {
@@ -1738,12 +1697,10 @@ function closeGalleryLightbox(event){
   document.body.style.overflow = '';
 }
 
-// ===== NOVA GALERIA  =====
-let galleryImagesV2 = JSON.parse(localStorage.getItem('galleryImages') || '[]');
 
-function getGalleryImagesV2(){
-  return Array.isArray(galleryImages) ? galleryImages : [];
-}
+
+
+
 
 function updateGalleryCount(){
   const countEl = document.getElementById('galleryImageCount');
@@ -1759,13 +1716,13 @@ function loadGallery() {
 
   grid.innerHTML = '';
 
-  if (!galleryImagesV2.length) {
+  if (!galleryImages.length) {
     grid.innerHTML = '<p>Sem imagens na galeria.</p>';
     updateGalleryCount();
     return;
   }
 
-  galleryImagesV2.forEach((src, index) => {
+  galleryImages.forEach((src, index) => {
     const post = document.createElement('article');
     post.className = 'gallery-post';
 
@@ -1774,8 +1731,8 @@ function loadGallery() {
         <span class="gallery-watermark">MBe'auty</span>
         <img src="${src}" alt="Trabalho ${index + 1} da galeria" loading="lazy">
         <div class="gallery-post-overlay">
-          <span class="gallery-stat">♡ Destaque</span>
-          <span class="gallery-stat">Ver</span>
+          <span class="gallery-post-stat">♡ Destaque</span>
+          <span class="gallery-post-stat">Ver</span>
         </div>
       </div>
     `;
@@ -1790,60 +1747,37 @@ function loadGallery() {
   updateGalleryCount();
 }
 
-function openGalleryDialog(){
-  const dialog = document.getElementById('galleryDialog');
-  if (!dialog) {
-    return;
-  }
+function renderAdminGallery(){
+  const list = document.getElementById('adminGalleryList');
+  if(!list) return;
 
-  loadGallery();
+  list.innerHTML = '';
 
-  if(typeof dialog.showModal === 'function'){
-    dialog.showModal();
-  }
+  getGalleryImages().forEach((src, index) => {
+    const container = document.createElement('div');
+    container.className = 'admin-gallery-card';
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = `Imagem ${index + 1}`;
+
+    const btn = document.createElement('button');
+    btn.textContent = 'Apagar';
+    btn.className = 'admin-gallery-delete';
+    btn.onclick = () => removeImageFromGallery(index);
+
+    container.appendChild(img);
+    container.appendChild(btn);
+    list.appendChild(container);
+  });
+
+  updateGalleryCount();
 }
 
-function closeGalleryDialog(){
-  const dialog = document.getElementById('galleryDialog');
-  if (!dialog) return;
-  dialog.close();
-}
 
-function openGalleryLightbox(src){
-  const lightbox = document.getElementById('galleryLightbox');
-  const img = document.getElementById('galleryLightboxImg');
 
-  if(!lightbox || !img) return;
 
-  img.src = src;
 
-  lightbox.style.display = 'flex';
-  lightbox.style.position = 'fixed';
-  lightbox.style.inset = '0';
-  lightbox.style.background = 'rgba(0,0,0,0.92)';
-  lightbox.style.alignItems = 'center';
-  lightbox.style.justifyContent = 'center';
-  lightbox.style.zIndex = '99999';
-
-  img.style.maxWidth = '92%';
-  img.style.maxHeight = '92%';
-  img.style.objectFit = 'contain';
-
-  document.body.style.overflow = 'hidden';
-}
-
-function closeGalleryLightbox(event){
-  if(event){ event.stopPropagation(); }
-
-  const lightbox = document.getElementById('galleryLightbox');
-  const img = document.getElementById('galleryLightboxImg');
-
-  if(!lightbox || !img) return;
-
-  lightbox.style.display = 'none';
-  img.src = '';
-  document.body.style.overflow = '';
-}
 
 async function addImageToGallery(){
   const input = document.getElementById('galleryUpload');
@@ -1871,7 +1805,7 @@ async function addImageToGallery(){
 
     const { error: uploadError } = await supabaseClient
       .storage
-      .from('galeria')
+      .from('GALERIA')
       .upload(fileName, file, {
         cacheControl: '3600',
         upsert: false
@@ -1885,7 +1819,7 @@ async function addImageToGallery(){
 
     const { data: publicUrlData } = supabaseClient
       .storage
-      .from('galeria')
+      .from('GALERIA')
       .getPublicUrl(fileName);
 
     galleryImages.push(publicUrlData.publicUrl);
@@ -1898,40 +1832,6 @@ async function addImageToGallery(){
   alert(files.length === 1 ? 'Imagem adicionada!' : `${files.length} imagens adicionadas!`);
   input.value = '';
 }
-
-function renderAdminGallery(){
-  const list = document.getElementById('adminGalleryList');
-  if(!list) return;
-
-  list.innerHTML = '';
-
-  if(!galleryImages.length){
-    list.innerHTML = '<p class="empty-bookings">Sem imagens na Galeria.</p>';
-    return;
-  }
-
-  galleryImages.forEach((src, index) => {
-    const card = document.createElement('div');
-    card.className = 'admin-gallery-card';
-
-    card.innerHTML = `
-      <img src="${src}" alt="Imagem ${index + 1}">
-      <button type="button" class="admin-gallery-delete" onclick="removeGalleryImage(${index})">
-        Remover
-      </button>
-    `;
-
-    list.appendChild(card);
-  });
-}
-
-function removeGalleryImage(index){
-  galleryImages.splice(index, 1);
-  localStorage.setItem('galleryImages_', JSON.stringify(galleryImages));
-  loadGallery();
-  renderAdminGallery();
-}
-
 
 function removeImageFromGallery(index){
   const confirmar = confirm('Tens a certeza que queres apagar esta imagem?');
