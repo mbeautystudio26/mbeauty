@@ -1546,10 +1546,10 @@ console.log("Supabase ligado:", supabaseClient)
 </div>
 
     <div>
-      <label class="admin-manual-label">Serviço</label>
-      <select id="manualBookingService" class="admin-manual-input">
-        <option value="">Selecionar serviço</option>
-      </select>
+      <label class="admin-manual-label">Serviços</label>
+   <select id="manualBookingService" class="admin-manual-input" multiple size="6">
+   </select>
+    <small class="admin-manual-help">Usa Ctrl (ou Cmd no Mac) para escolher vários serviços.</small>
     </div>
 
     <div>
@@ -2295,7 +2295,9 @@ async function saveBookingToSheet(bookingObj) {
   name: bookingObj.name,
   telefone: bookingObj.phone,
   email: bookingObj.email,
-  servico: bookingObj.service,
+  servico: Array.isArray(bookingObj.services)
+  ? bookingObj.services.join(' + ')
+  : (bookingObj.services || bookingObj.service || ''),
   data: bookingObj.date,
   hora: bookingObj.time,
   horaFim: bookingObj.endTime || '',
@@ -2426,13 +2428,15 @@ if (!Array.isArray(data)) return [];
     const fixedDate = new Date(rawDate).toLocaleDateString('en-CA', {
       timeZone: 'Europe/Lisbon'
     });
-
+    const serviceText = row['Serviço'] || row.Servico || '';
+    
     return {
       id: row.id,
       name: row.Nome || '',
       phone: String(row.Telefone || ''),
       email: row.Email || '',
-      service: row['Serviço'] || row.Servico || '',
+      service: serviceText,
+      services: String(serviceText).split('+').map(s => s.trim()).filter(Boolean),
       date: fixedDate,
       time: formatSheetTime(row.Hora),
       endTime: row.HoraFim ? formatSheetTime(row.HoraFim) : '',
@@ -2892,7 +2896,9 @@ function hasManualBookingConflict(date, startTime, endTime, professional){
 async function saveManualBooking(){
   const name = document.getElementById('manualBookingName').value.trim();
   const phone = document.getElementById('manualBookingPhone').value.trim();
-  const service = document.getElementById('manualBookingService').value;
+ const selectedOptions = Array.from(document.getElementById('manualBookingService').selectedOptions);
+const selectedServices = selectedOptions.map(opt => opt.value);
+const service = selectedServices.join(' + ');
   const priceInput = document.getElementById('manualBookingPrice').value.trim();
   const date = document.getElementById('manualBookingDate').value;
   const startTime = document.getElementById('manualBookingStartTime').value;
@@ -2920,22 +2926,29 @@ if(hasManualBookingConflict(date, startTime, endTime, selectedProfile)){
     return;
   }
 
-  const bookingObj = {
-    id: Date.now() + Math.floor(Math.random() * 1000),
-    professional: selectedProfile,
-    service: service,
-    name: name,
-    phone: phone,
-    email: '',
-    notes: notes,
-    date: date,
-    time: startTime,
-    endTime: endTime,
-    duration: '',
-    finalPrice: parsedPrice,
-    status: 'pending',
-    createdAt: new Date().toISOString()
-  };
+const serviceText = String(service || '').trim();
+const serviceList = serviceText
+  .split('+')
+  .map(s => s.trim())
+  .filter(Boolean);
+
+const bookingObj = {
+  id: Date.now() + Math.floor(Math.random() * 1000),
+  professional: selectedProfile,
+  service: serviceText,
+  services: selectedServices,
+  name: name,
+  phone: phone,
+  email: '',
+  notes: notes,
+  date: date,
+  time: startTime,
+  endTime: endTime,
+  duration: '',
+  finalPrice: parsedPrice,
+  status: 'pending',
+  createdAt: new Date().toISOString()
+};
 
   try{
     await saveBookingToSheet(bookingObj);
@@ -3500,7 +3513,9 @@ async function updateEditedBookingOnSheet(booking){
         name: booking.name || '',
         telefone: booking.phone || '',
         email: booking.email || '',
-        servico: booking.service || '',
+        servico: Array.isArray(booking.services)
+         ? booking.services.join(' + ')
+         : (booking.services || booking.service || ''),
         data: booking.date || '',
         hora: booking.time || '',
         horaFim: booking.endTime || '',
