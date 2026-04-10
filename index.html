@@ -1836,7 +1836,7 @@ async function addImageToGallery(){
 
     const { error: uploadError } = await supabaseClient
       .storage
-      .from('GALERIA')
+      .from('galeria')
       .upload(fileName, file, {
         cacheControl: '3600',
         upsert: false
@@ -1850,7 +1850,7 @@ async function addImageToGallery(){
 
     const { data: publicUrlData } = supabaseClient
       .storage
-      .from('GALERIA')
+      .from('galeria')
       .getPublicUrl(fileName);
 
     galleryImages.push(publicUrlData.publicUrl);
