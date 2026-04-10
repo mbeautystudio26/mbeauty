@@ -1698,10 +1698,6 @@ function closeGalleryLightbox(event){
 }
 
 
-
-
-
-
 function updateGalleryCount(){
   const countEl = document.getElementById('galleryImageCount');
   if(!countEl) return;
@@ -1709,6 +1705,36 @@ function updateGalleryCount(){
   const total = getGalleryImages().length;
   countEl.textContent = `${total} ${total === 1 ? 'publicação' : 'publicações'}`;
 }
+
+async function fetchGalleryFromSupabase() {
+  const { data, error } = await supabaseClient
+    .storage
+    .from('GALERIA')
+    .list('', {
+      limit: 100,
+      offset: 0,
+      sortBy: { column: 'name', order: 'desc' }
+    });
+
+  if (error) {
+    console.error('Erro ao listar imagens do Supabase:', error);
+    return;
+  }
+
+  galleryImages = (data || [])
+    .filter(file => file.name)
+    .map(file => {
+      const { data: publicUrlData } = supabaseClient
+        .storage
+        .from('GALERIA')
+        .getPublicUrl(file.name);
+
+      return publicUrlData.publicUrl;
+    });
+
+  localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
+}
+
 
 function loadGallery() {
   const grid = document.getElementById('galleryDialogGrid');
@@ -1870,7 +1896,8 @@ function renderAdminGallery(){
 }
 
 // carregar quando a página abrir
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await fetchGalleryFromSupabase();
   loadGallery();
   renderAdminGallery();
 
