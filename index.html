@@ -881,7 +881,20 @@ dialog::backdrop {
 }
 
 </style>
+
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+const supabaseUrl = 'https://thihsvoupgorkpfnynbm.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoaWhzdm91cGdvcmtwZm55bmJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3ODQxNzIsImV4cCI6MjA5MTM2MDE3Mn0.A0RX8cnbYphyXNwDUS9j1PTOMMu0nETOx_ORC-S_LnY'
+
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey)
+
+console.log("Supabase ligado:", supabaseClient)
+
+</script>
+
 </head>
 <body>
 
@@ -1618,7 +1631,7 @@ dialog::backdrop {
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ===== ZOOM (legacy - removed) =====
 
 // ===== PROFISSIONAL & SERVIÇOS =====
@@ -1832,67 +1845,58 @@ function closeGalleryLightbox(event){
   document.body.style.overflow = '';
 }
 
-
-
-
-function addImageToGallery(){
+async function addImageToGallery(){
   const input = document.getElementById('galleryUpload');
   const files = Array.from(input?.files || []);
 
-  if(!files.length){
+  if (!files.length) {
     alert('Escolhe pelo menos uma imagem');
     return;
   }
 
-  let processed = 0;
+  for (const file of files) {
+    const originalName = file.name;
+    const ext = originalName.split('.').pop().toLowerCase();
 
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = function(e){
-      galleryImages.push(e.target.result);
-      processed += 1;
+    const baseName = originalName
+      .replace(/\.[^/.]+$/, '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9-_]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .toLowerCase();
 
-      if(processed === files.length){
-        localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
-        loadGallery();
-        renderAdminGallery();
-        alert(files.length === 1 ? 'Imagem adicionada!' : `${files.length} imagens adicionadas!`);
-        input.value = '';
-      }
-    };
-    reader.readAsDataURL(file);
-  });
-}
+    const fileName = `${Date.now()}-${baseName}.${ext}`;
 
-function addImageToGallery(){
-  const input = document.getElementById('galleryUpload');
-  const files = Array.from(input?.files || []);
+    const { error: uploadError } = await supabaseClient
+      .storage
+      .from('galeria')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
-  if(!files.length){
-    alert('Escolhe pelo menos uma imagem');
-    return;
+    if (uploadError) {
+      console.error('Erro Supabase upload:', uploadError);
+      alert('Erro no upload da imagem');
+      return;
+    }
+
+    const { data: publicUrlData } = supabaseClient
+      .storage
+      .from('galeria')
+      .getPublicUrl(fileName);
+
+    galleryImages.push(publicUrlData.publicUrl);
   }
 
-  let processed = 0;
+  localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
+  loadGallery();
+  renderAdminGallery();
 
-  files.forEach(file => {
-    const reader = new FileReader();
-
-    reader.onload = function(e){
-      galleryImages.push(e.target.result);
-      processed += 1;
-
-      if(processed === files.length){
-        localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
-        loadGallery();
-        renderAdminGallery();
-        input.value = '';
-        alert('Imagens adicionadas à Galeria com sucesso!');
-      }
-    };
-
-    reader.readAsDataURL(file);
-  });
+  alert(files.length === 1 ? 'Imagem adicionada!' : `${files.length} imagens adicionadas!`);
+  input.value = '';
 }
 
 function renderAdminGallery(){
@@ -1901,12 +1905,12 @@ function renderAdminGallery(){
 
   list.innerHTML = '';
 
-  if(!galleryImagesV2.length){
+  if(!galleryImages.length){
     list.innerHTML = '<p class="empty-bookings">Sem imagens na Galeria.</p>';
     return;
   }
 
-  galleryImagesV2.forEach((src, index) => {
+  galleryImages.forEach((src, index) => {
     const card = document.createElement('div');
     card.className = 'admin-gallery-card';
 
@@ -1922,19 +1926,11 @@ function renderAdminGallery(){
 }
 
 function removeGalleryImage(index){
-  galleryImagesV2.splice(index, 1);
+  galleryImages.splice(index, 1);
   localStorage.setItem('galleryImages_', JSON.stringify(galleryImages));
   loadGallery();
   renderAdminGallery();
 }
-
-
-
-
-
-
-
-
 
 
 function removeImageFromGallery(index){
