@@ -1864,14 +1864,36 @@ async function addImageToGallery(){
   input.value = '';
 }
 
-function removeImageFromGallery(index){
+async function removeImageFromGallery(index){
   const confirmar = confirm('Tens a certeza que queres apagar esta imagem?');
-  if(!confirmar) return;
+  if (!confirmar) return;
 
-  galleryImages.splice(index, 1);
-  localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
-  loadGallery();
-  renderAdminGallery();
+  const imageUrl = galleryImages[index];
+  if (!imageUrl) return;
+
+  try {
+    const url = new URL(imageUrl);
+    const parts = url.pathname.split('/public/galeria/');
+    const filePath = parts[1];
+
+    const { error } = await supabaseClient
+      .storage
+      .from('galeria')
+      .remove([filePath]);
+
+    if (error) {
+      console.error('Erro ao apagar no Supabase:', error);
+      alert('Erro ao apagar imagem');
+      return;
+    }
+
+    await fetchGalleryFromSupabase();
+    loadGallery();
+    renderAdminGallery();
+
+  } catch (err) {
+    console.error('Erro ao apagar:', err);
+  }
 }
  
 function renderAdminGallery(){
