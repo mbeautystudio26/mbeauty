@@ -752,7 +752,7 @@ dialog::backdrop {
 }
 .gallery-empty strong{display:block;color:var(--charcoal);margin-bottom:6px}
 .gallery-lightbox{
-  position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;
+  position:fixed;inset:0;z-index:9999999;display:none;align-items:center;justify-content:center;
   background:rgba(20,10,16,.88);padding:20px;
 }
 .gallery-lightbox.show{display:flex}
@@ -1355,6 +1355,7 @@ console.log("Supabase ligado:", supabaseClient)
         <ul>
           <li>📍 R. João Maria Magalhães Ferraz lj 3, Mem-Martins</li>
           <li><a href="mailto:mbe.autystudio@outlook.pt">📧 mbe.autystudio@outlook.pt</a></li>
+          <li><a href="tel:963893570">Tlm-963 893 570</a></li>
           <li style="display:flex;align-items:center;gap:14px;margin-top:10px">
             <a href="https://www.instagram.com/mbe.autystudio/" target="_blank" rel="noopener" title="Instagram" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);transition:transform .2s,box-shadow .2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 14px rgba(192,82,122,.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
@@ -1437,6 +1438,7 @@ console.log("Supabase ligado:", supabaseClient)
         <div class="admin-name-tag" id="adminNameEl">Bete</div>
         <div class="admin-role-tag">Administradora</div>
       </div>
+      <button class="admin-logout" onclick="quickChangePassword()">🔒 Mudar Password</button>
       <button class="admin-logout" onclick="logoutAdmin()">Sair</button>
     </div>
   </div>
@@ -2719,50 +2721,153 @@ function doLogin(e){
   handleAdminLogin();
 }
 
-async function handleAdminLogin(){
+async function handleAdminLogin() {
   var pass = document.getElementById('adminPass').value;
 
-  if(!pass){
+  if (!pass) {
     document.getElementById('loginError').textContent = 'Insere a password.';
     document.getElementById('loginError').classList.add('show');
     return;
   }
 
   try {
-    const formData = new URLSearchParams();
-    formData.append('action', 'login');
-    formData.append('password', pass);
-    formData.append('profissional', selectedProfile);
-    
-    const res = await fetch(SHEETS_URL, {
-      method: 'POST',
-      body: formData
-    });
+   let email = "";
+const perfil = String(selectedProfile || "").toLowerCase();
 
-    const data = await res.json();
-
-    if (data.ok) {
-      document.getElementById('loginError').classList.remove('show');
-      document.getElementById('adminPass').value = '';
-      closeAdmin();
-      openAdminPanel();
-      return;
-    }
-
-    document.getElementById('loginError').textContent = 'Senha incorreta. Tente novamente.';
-    document.getElementById('loginError').classList.add('show');
-    document.getElementById('adminPass').value = '';
-    document.getElementById('adminPass').focus();
-
-  } catch (err) {
-    document.getElementById('loginError').textContent = 'Erro ao ligar ao servidor.';
-    document.getElementById('loginError').classList.add('show');
-    console.error(err);
-  }
+if (perfil === "bete") {
+  email = "beteabfortio@hotmail.com";
+} else if (perfil === "marta") {
+  email = "mbe.autystudio@outlook.pt";
+} else {
+  email = "nuno06071984@gmail.com";
 }
 
+    
+    
+    console.log("selectedProfile:", selectedProfile);
+console.log("email usado:", email);
+    
+    await window.firebaseSignIn(email, pass);
 
+    document.getElementById('loginError').classList.remove('show');
+    document.getElementById('adminPass').value = '';
+
+    closeAdmin();
+    openAdminPanel();
+    return;
+
+  } catch (err) {
+  document.getElementById('loginError').textContent = 'Senha incorreta. Tente novamente.';
+  document.getElementById('loginError').classList.add('show');
+  document.getElementById('adminPass').value = '';
+  document.getElementById('adminPass').focus();
+  console.error("ERRO FIREBASE LOGIN:", err);
+}
+}
+
+async function changeMyPassword(currentPassword, newPassword) {
+  try {
+    const user = window.firebaseAuth.currentUser;
+
+    if (!user) {
+      alert("Não estás autenticado");
+      return false;
+    }
+
+    if (newPassword.length < 6) {
+      alert("A nova password tem de ter pelo menos 6 caracteres.");
+      return false;
+    }
+
+    const credential = EmailAuthProvider.credential(
+      user.email,
+      currentPassword
+    );
+
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPassword);
+
+    alert("Password alterada com sucesso!");
+    return true;
+
+  } catch (err) {
+    console.error("Erro ao mudar password:", err);
+    alert("Erro ao alterar password. Verifica a password atual.");
+    return false;
+  }
+}
  
+window.openChangePasswordPopup = function () {
+  console.log("abrir popup password");
+
+  const popup = document.getElementById('changePasswordPopup');
+  console.log("popup encontrado?", popup);
+
+  if (!popup) {
+    alert("Popup changePasswordPopup não encontrado no HTML");
+    return;
+  }
+
+  popup.style.display = 'block';
+};
+
+window.closeChangePasswordPopup = function () {
+  console.log("fechar popup password");
+
+  const popup = document.getElementById('changePasswordPopup');
+  if (!popup) return;
+
+  popup.style.display = 'none';
+};
+
+window.handleChangePassword = async function () {
+  console.log("clicou em guardar password");
+
+  const current = document.getElementById('currentPass').value;
+  const newPass = document.getElementById('newPass').value;
+
+  console.log("current preenchida?", !!current);
+  console.log("new preenchida?", !!newPass);
+
+  if (!current || !newPass) {
+    alert("Preenche todos os campos");
+    return;
+  }
+
+  const ok = await window.firebaseChangePassword(current, newPass);
+
+  console.log("resultado mudança password:", ok);
+
+  if (!ok) return;
+
+  document.getElementById('currentPass').value = '';
+  document.getElementById('newPass').value = '';
+
+  window.closeChangePasswordPopup();
+};
+
+
+window.quickChangePassword = async function () {
+  const current = prompt("Insere a password atual:");
+  if (!current) return;
+
+  const next = prompt("Insere a nova password:");
+  if (!next) return;
+
+  console.log("quickChangePassword chamada");
+
+  const ok = await window.firebaseChangePassword(current, next);
+
+  console.log("resultado mudança password:", ok);
+
+  if (ok) {
+    alert("Password alterada com sucesso.");
+  }
+};
+
+
+
+
 
  async function openAdminPanel(){
   document.getElementById('adminAvatarEl').textContent = selectedProfile[0];
@@ -4221,6 +4326,115 @@ document.addEventListener('keydown', e=>{
 
   </div>
 </dialog>
+
+
+
+
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    updatePassword,
+    EmailAuthProvider,
+    reauthenticateWithCredential,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA_g1Xttqzb87YXNQJaHksamaaY_a3XKPc",
+    authDomain: "mbe-autystudio.firebaseapp.com",
+    projectId: "mbe-autystudio",
+    storageBucket: "mbe-autystudio.firebasestorage.app",
+    messagingSenderId: "224149921164",
+    appId: "1:224149921164:web:2ead183c5ae7920a238aa9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // 🔥 tornar acessível globalmente
+  window.firebaseAuth = auth;
+  window.firebaseDb = db;
+
+  // login
+  window.firebaseSignIn = (email, password) =>
+    signInWithEmailAndPassword(auth, email, password);
+
+  // logout
+  window.firebaseSignOut = () =>
+    signOut(auth);
+
+  // mudar password
+  window.firebaseChangePassword = async (currentPassword, newPassword) => {
+    try {
+      const user = auth.currentUser;
+
+      if (!user) {
+        alert("Não estás autenticado");
+        return false;
+      }
+
+      if (newPassword.length < 6) {
+        alert("A nova password tem de ter pelo menos 6 caracteres.");
+        return false;
+      }
+
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        currentPassword
+      );
+
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPassword);
+
+      alert("Password alterada com sucesso!");
+      return true;
+
+    } catch (err) {
+      console.error("Erro ao mudar password:", err);
+      alert("Erro ao alterar password. Verifica a password atual.");
+      return false;
+    }
+  };
+
+  console.log("✅ Firebase ligado com sucesso");
+</script>
+
+
+<div id="changePasswordPopup" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.65); z-index:999999;">
+  <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:#ffffff; width:90%; max-width:420px; padding:24px; border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.25);">
+    <h3 style="margin:0 0 14px 0; color:#111;">Mudar Password</h3>
+
+    <input
+      type="password"
+      id="currentPass"
+      placeholder="Password atual"
+      style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ccc; border-radius:8px; color:#111; background:#fff;"
+    >
+
+    <input
+      type="password"
+      id="newPass"
+      placeholder="Nova password"
+      style="width:100%; padding:12px; margin-bottom:14px; border:1px solid #ccc; border-radius:8px; color:#111; background:#fff;"
+    >
+
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button type="button" onclick="closeChangePasswordPopup()" style="padding:10px 14px; border:none; border-radius:8px; cursor:pointer;">
+        Cancelar
+      </button>
+
+      <button type="button" onclick="handleChangePassword()" style="padding:10px 14px; border:none; border-radius:8px; cursor:pointer; background:#111; color:#fff;">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
 
 
 
