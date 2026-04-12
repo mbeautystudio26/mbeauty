@@ -2787,8 +2787,12 @@ async function changeMyPassword(currentPassword, newPassword) {
     await reauthenticateWithCredential(user, credential);
     await updatePassword(user, newPassword);
 
-    alert("Password alterada com sucesso!");
-    return true;
+    alert("Password alterada com sucesso! Vais ter de entrar novamente.");
+
+// 🔥 logout automático
+await window.firebaseSignOut();
+
+return true;
 
   } catch (err) {
     console.error("Erro ao mudar password:", err);
